@@ -20,6 +20,39 @@ def create_graph(TOPOLOGY_FILE):
 	return my_graph
 
 
+def dijsktra(graph,start_node,end_node):
+	visited={start_node:0}
+	path={}
+	nodes=set(graph.graph)
+	while nodes:
+		min_node=None
+		for node in nodes:
+			if node.name in visited:
+				if min_node is None:
+					min_node=node
+				elif visited[node.name]<visited[min_node.name]:
+					min_node=node
+		if min_node is None:
+			break
+		nodes.remove(min_node)
+		current_weight=visited[min_node.name]
+		for edge in min_node.adj_node:
+			weight=current_weight+int(edge['dtime'])
+			if edge['name'] not in visited or weight < visited[edge['name']]:
+				visited[edge['name']]=weight
+				path[edge['name']]=min_node.name
+	search_key=end_node
+	path_to_return=search_key
+
+	while search_key!=start_node:
+		temp=path[search_key]
+		path_to_return=temp+path_to_return
+		search_key=temp
+
+	return path_to_return
+
+
+
 
 
 def main():
@@ -30,14 +63,20 @@ def main():
 	PACKET_RATE=sys.argv[5]
 
 	my_graph=create_graph(TOPOLOGY_FILE)
+
+	path=dijsktra(my_graph,'A','O')
+	#print(visited)
+	print(path)
+
+	'''
 	for each in my_graph.graph:
-		
+
 		print(each.name)
 		print("adj_node")
 		for one in each.adj_node:
 			print(one['name'])
 		print("------------")
-
+	'''
 
 
 
