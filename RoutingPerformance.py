@@ -93,6 +93,8 @@ def workload(input, packet_rate):
 
 	#busy: route once the circuit has been established
 
+
+#stats functions here
 def init_stats():
 	#check if file exist 
 	#if so delete and make new
@@ -145,6 +147,10 @@ def main():
 	path=dijsktra(my_graph,'A','O')
 	#print(visited)
 	print(path)
+
+	#workload main 
+	workload(path, PACKET_RATE)
+
 
 	'''
 	for each in my_graph.graph:
