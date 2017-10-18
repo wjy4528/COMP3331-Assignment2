@@ -128,9 +128,8 @@ def init_stats():
 def log_statistics():
 	#calculates the statistics and appedn to file
 
-	success_percentage_routed_packets = total_success_packets/total_success_packets
+	success_percentage_routed_packets = total_success_packets/total_packets
 	blocked_percent = total_blocked_packets/total_packets
-	avg_hops = total_hops/total_paths
 
 	f = open("stats.txt", 'a+')
 
@@ -139,9 +138,9 @@ def log_statistics():
 	f.write("number of successfully routed packets:" + str(total_success_packets))
 	f.write("percentage of successfully routed packets:" + str(success_percentage_routed_packets)) 
 	f.write("number of blocked packets:" + str(total_blocked_packets))
-	f.write("percentage of blocked packets:" + str())
-	f.write("average number of hops per circuit:" + str())
-	f.write("average cumulative propagation delay per circuit:" + str())
+	f.write("percentage of blocked packets:" + str(blocked_percent))
+	f.write("average number of hops per circuit:" + str(cal_avg_hops())
+	f.write("average cumulative propagation delay per circuit:" + str(cal_avg_delay()))
 
 	f.close()
 
@@ -157,11 +156,22 @@ def print_stats ():
 def cal_avg_delay():
 	#array of delay over, each element calculated individually based off the other delay
 	#add up all the delays in the array over total circuits
-	
+	total_delay = 0
+
+	for i in arr_avg_delay:
+		total_delay += i
+
+	avg_delay = total_delay / total_paths
+	return avg_delay
 	#completed
 
+def cal_avg_hops ():
+	avg_hops = total_hops / total_paths
+	return avg_hops
 
-def cal_avg_hops(hops_input):
+	#completed
+
+def app_avg_hops(hops_input):
 	#total hops per circuit
 	#over total circuits
 	global arr_avg_hop
@@ -178,6 +188,26 @@ def cal_avg_hops(hops_input):
 
 	#completed
 
+def validate_args (network, routing, topology, workload, packet_r):
+	vad_boolean = True 
+
+	#lots of if statements on input checks
+	if (network != "CIRCUIT" || network != "PACKET"):
+		vad_boolean = False
+	if (routing != "SHP" || routing != "SDP" || routing != "LLP"):
+		vad_boolean = False
+	if (not os.path.exists(topology)):
+		#check= if file exist
+		print "topology does not exist"
+		vad_boolean = False 
+	if (not os.path.exists(workload)):
+		#check if file exist #2
+		print "work load does not exist"
+		vad_boolean = False 
+	if (int(packet_r) < 0):
+		vad_boolean = False
+
+	return vad_boolean
 
 def main():
 	NETWORK_SCHEME=sys.argv[1]
@@ -186,17 +216,24 @@ def main():
 	WORKLOAD_FILE=sys.argv[4]
 	PACKET_RATE=sys.argv[5]
 
+	#checking arguements here
+	if (validate_args(NETWORK_SCHEME, ROUTING_SCHEME, 
+		TOPOLOGY_FILE, WORKLOAD_FILE, PACKET_RATE) == False):
+		print "inputs not valid, closing program..."
+		sys.exit()
+
 	my_graph=create_graph(TOPOLOGY_FILE)
 
 	path=dijsktra(my_graph,'A','O')
 	#print(visited)
 	print(path)
 
-	#workload main 
+	#workload main (sort this part out for cases)
 	workload(path, PACKET_RATE)
 
 
 	'''
+	debugging the graph graph
 	for each in my_graph.graph:
 
 		print(each.name)
