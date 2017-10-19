@@ -69,8 +69,56 @@ def dijsktra(graph,start_node,end_node):
 
 	return path_to_return
 
+#list of previous path in string format
+#list of previous time in float format
+list_prev_paths = []
+list_prev_ftimes = []
+
+def shp_case(graph, source, destin, curr_time, duration):
+	global total_paths
+	global total_hops
+	global list_prev_path
+	global list_prev_ftimes
+
+	#keep list of finish time for packets so it that path can be updated or not
+	#keep a list of previous paths in array to
+	packet_ft = float(curr_time) + float(duration)
+
+	for i in list_prev_ftimes:
+		if (float(curr_time) >= list_prev_ftimes[0]):
+			#update_used (graph, list_prev_paths, -1)
+			#might need a for loop to go through list get that tuple and delete it
+
+	path = dijsktra (graph, source, destin)
+	#update the graph 
+	#update_used (graph, path, value)
+	#append to both prev paths and ftimes list
+
+	#shortest hop path
+
+	#get propagation delay
+	
+	#get hops
+	total_hops += len(path)
+
+	#inc circuit counter, assuming if no path return no circuit inc
+
+
+	#last two stats to answer, do we count it if no circuit/path is returned?
+
+	pass
+
+def sdp_case(graph, source, destin, curr_time, duration):
+	#shortest delay path
+	pass
+
+def llp_case(graph, source, destin, curr_time, duration):
+	#least load path
+	pass
+
 #main processing function
 def workload(graph, n_scheme, r_scheme, w_file, rate):
+	global total_circuit_request
 
 	with open(w_file) as fp:
 		line = fp.readline()
@@ -94,13 +142,31 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 			print ("destination: " + str(destin))
 
 			line = fp.readline()
+			#increment the counter
+			total_circuit_request += 1
 
-
+			'''
 			print ('\n')
 			print ('reply')
 			print ("----------------------------")
 			print (dijsktra(graph, source, destin))
 			print ("----------------------------")
+			'''
+
+			if(n_scheme == 'SHP')
+				#shortest hop path
+				#feed function and log
+				shp_case(graph, source, destin)
+			elif(n_scheme == 'LDP')
+				#least delay path
+				ldp_case(graph, source, destin)
+			elif(n_scheme == 'LLP')
+				#least loaded path
+				llp_case(graph, source, destin)
+			else:
+				print "something went wrong, closing program..."
+				break
+
 
 	#dijsktra(network_scheme,my_graph, source, destin)
 	#returned string, and delay time
@@ -113,8 +179,6 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 	#updating the load on the graph
 	#update_used (graph, path, value)
 	#value = 1 if path is being used and -1 if path use has ended
-
-
 	'''
 	cases here 
 		#case 1
