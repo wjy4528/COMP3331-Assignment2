@@ -74,53 +74,52 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 
 	with open(w_file) as fp:
 		line = fp.readline()
-		val_arr = line.split(" ")
-		#m = re.search('(.*\d+) (/w) (/w) (.*\d+)', line)
-		elapse = val_arr[0]
-		num_packets = val_arr[1]
-		source = val_arr[2]
-		destin = val_arr[3]
-		packet_dur = val_arr[4]
-		'''
-		elapse = float(m.group(1))
-		num_packets = round(float(packet_rate)*float(m.group(4)))
-		source = m.group(2)
-		destin = m.group(3)
-		packet_dur = round(num_packets/float(packet_rate))
-		'''
 
-		print '\n'
-		print "debugging here:"
-		print "----------------------------"
-		print "elapse" + str(elapse)
-		print "number of packets" + str(num_packets)
-		print "source " + str(source)
-		print "destination " + str(destin)
+		while line:
+			val_arr = line.split(" ")
+			#m = re.search('(.*\d+) (/w) (/w) (.*\d+)', line)
+			
+			elapse = val_arr[0]
+			source = val_arr[1]
+			destin = val_arr[2]
+			num_packets = round(float(rate)*float(val_arr[3]))
+			packet_dur = round(num_packets/int(rate))
 
-		#check the commands to see which case to approach
-		#example command: 
+			print ('\n')
+			print ("debugging here:")
+			print ("----------------------------")
+			print ("elapse: " + str(elapse))
+			print ("number of packets: " + str(num_packets))
+			print ("source: " + str(source))
+			print ("destination: " + str(destin))
+
+			line = fp.readline()
 
 
-	#dijsktra(my_graph, source, destin)
+			print ('\n')
+			print ('reply')
+			print ("----------------------------")
+			print (dijsktra(graph, source, destin))
+			print ("----------------------------")
 
-	#check if output is valid here
+	#dijsktra(network_scheme,my_graph, source, destin)
+	#returned string, and delay time
 
 	#log the statistics here
 
 	#till work load function ends
 
 
-	#updating the graph usage 
+	#updating the load on the graph
 	#update_used (graph, path, value)
 	#value = 1 if path is being used and -1 if path use has ended
 
 
 	'''
-	if (case == 0):
+	cases here 
 		#case 1
 		#use routing protocol once and send packets through the same route
 
-	elif (case == 1):
 		#case 2
 		#use routing protocol multiple times and 
 		#find appropriate path for each packet (time elapse and time is important here)
@@ -138,9 +137,9 @@ def init_stats():
 	#if so delete and make new
 	fname = "./log.txt"
 	if (os.path.exists(fname)):
-		print "it exists"
+		print ("log file exist in directory")
 	else:
-		print "no file exist in directory"
+		print ("no log file exist in directory")
 	
 
 def log_statistics():
@@ -168,7 +167,7 @@ def print_stats():
 	f = open("log.txt", 'r')
 
 	for line in iter(f):
-		print line 
+		print (line)
 	f.close()
 
 
@@ -230,7 +229,7 @@ def validate_args (network, routing, topology, workload, packet_r):
 		#print "break 2"
 
 	if (not os.path.exists(topology)):
-		print "topology does not exist"
+		print ("topology does not exist")
 		#print "break 3"
 		vad_boolean = False 
 	if (not os.path.exists(workload)):
@@ -255,7 +254,7 @@ def main():
 	#checking arguements here
 	if (validate_args(NETWORK_SCHEME, ROUTING_SCHEME, 
 		TOPOLOGY_FILE, WORKLOAD_FILE, PACKET_RATE) == False):
-		print "inputs not valid, closing program..."
+		print ("inputs not valid, closing program...")
 		sys.exit()
 
 
