@@ -68,31 +68,39 @@ def dijsktra(graph,start_node,end_node):
 	return path_to_return
 
 #main processing function
-def workload(graph, n_scheme, r_scheme, w_file, rate)
+def workload(graph, n_scheme, r_scheme, w_file, rate):
 
-	f = open(w_file, 'r')
-
-	for i in f:
-		#getting variables out from the work load file
-		m = re.search('(.*\d+) (/w) (/w) (.*\d+)', input )
+	with open(w_file) as fp:
+		line = fp.readline()
+		m = re.search('(.*\d+) (/w) (/w) (.*\d+)', line)
 		elapse = float(m.group(1))
 		num_packets = round(float(packet_rate)*float(m.group(4)))
 		source = m.group(2)
 		destin = m.group(3)
 		packet_dur = round(num_packets/float(packet_rate))
-	
+
+		print '\n'
+		print "debugging here:"
+		print "----------------------------"
+		print "elapse" + str(elapse)
+		print "number of packets" + str(num_packets)
+		print "source " + str(source)
+		print "destination " + str(destin)
+
+		#check the commands to see which case to approach
+		#example command: 
 
 
-	print "debugging here:"
-	print "----------------------------"
-	print "elapse" + str(elapse)
-	print "number of packets" + str(num_packets)
-	print "source " + str(source)
-	print "destination " + str(destin)
+	#dijsktra(my_graph, source, destin)
 
-	#check the commands to see which case to approach
-	#example command: 
+	#check if output is valid here
 
+	#log the statistics here
+
+	#till work load function ends
+
+
+	'''
 	if (case == 0):
 		#case 1
 		#use routing protocol once and send packets through the same route
@@ -107,17 +115,7 @@ def workload(graph, n_scheme, r_scheme, w_file, rate)
 		#busy: route once the circuit has been established
 
 		#need to implement something in graph for this case
-
-	else:
-		print "invalid input"
-		return 
-
-def workload_case1():
-	pass
-
-def workload_case2():
-	pass
-
+	'''
 
 #stats functions here
 def init_stats():
@@ -227,9 +225,10 @@ def main():
 		print "inputs not valid, closing program..."
 		sys.exit()
 
+
+	init_stats()
+
 	my_graph=create_graph(TOPOLOGY_FILE)
-
-
 	path=dijsktra(my_graph,'A','O')
 	#print(visited)
 	print(path)
@@ -237,6 +236,8 @@ def main():
 	#workload main (sort this part out for cases)
 	workload(my_graph, NETWORK_SCHEME, ROUTING_SCHEME, WORKLOAD_FILE, packet_rate)
 
+	log_statistics()
+	print_stats()
 
 	'''
 	debugging the graph graph
