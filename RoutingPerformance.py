@@ -68,14 +68,19 @@ def dijsktra(graph,start_node,end_node):
 	return path_to_return
 
 #main processing function
-def workload(input, packet_rate, case):
-	#some vars
-	m = re.search('(.*\d+) (/w) (/w) (.*\d+)', input )
-	elapse = float(m.group(1))
-	num_packets = round(float(packet_rate)*float(m.group(4)))
-	source = m.group(2)
-	destin = m.group(3)
-	packet_dur = round(num_packets/float(packet_rate))
+def workload(graph, n_scheme, r_scheme, w_file, rate)
+
+	f = open(w_file, 'r')
+
+	for i in f:
+		#getting variables out from the work load file
+		m = re.search('(.*\d+) (/w) (/w) (.*\d+)', input )
+		elapse = float(m.group(1))
+		num_packets = round(float(packet_rate)*float(m.group(4)))
+		source = m.group(2)
+		destin = m.group(3)
+		packet_dur = round(num_packets/float(packet_rate))
+	
 
 
 	print "debugging here:"
@@ -224,12 +229,13 @@ def main():
 
 	my_graph=create_graph(TOPOLOGY_FILE)
 
+
 	path=dijsktra(my_graph,'A','O')
 	#print(visited)
 	print(path)
 
 	#workload main (sort this part out for cases)
-	workload(path, PACKET_RATE)
+	workload(my_graph, NETWORK_SCHEME, ROUTING_SCHEME, WORKLOAD_FILE, packet_rate)
 
 
 	'''
