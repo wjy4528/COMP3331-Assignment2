@@ -4,9 +4,11 @@ import time
 import threading
 import os.path 
 import math
-import collection
 import re
 from Graph import Graph
+
+
+#program usable :  python RoutingPerformance.py CIRCUIT SDP topology1.txt workloadexample.txt 2
 
 #global counters
 total_circuit_request = 0
@@ -72,12 +74,20 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 
 	with open(w_file) as fp:
 		line = fp.readline()
-		m = re.search('(.*\d+) (/w) (/w) (.*\d+)', line)
+		val_arr = line.split(" ")
+		#m = re.search('(.*\d+) (/w) (/w) (.*\d+)', line)
+		elapse = val_arr[0]
+		num_packets = val_arr[1]
+		source = val_arr[2]
+		destin = val_arr[3]
+		packet_dur = val_arr[4]
+		'''
 		elapse = float(m.group(1))
 		num_packets = round(float(packet_rate)*float(m.group(4)))
 		source = m.group(2)
 		destin = m.group(3)
 		packet_dur = round(num_packets/float(packet_rate))
+		'''
 
 		print '\n'
 		print "debugging here:"
@@ -98,6 +108,11 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 	#log the statistics here
 
 	#till work load function ends
+
+
+	#updating the graph usage 
+	#update_used (graph, path, value)
+	#value = 1 if path is being used and -1 if path use has ended
 
 
 	'''
@@ -134,8 +149,8 @@ def log_statistics():
 	success_percentage_routed_packets = total_success_packets/total_packets
 	blocked_percent = total_blocked_packets/total_packets
 
-	f = open("stats.txt", 'a+')
-
+	#f = open("stats.txt", 'a+')
+'''
 	f.write("total number of virtual circuit requests:" + str(total_circuit_request))
 	f.write("total number of packets:" + str(total_packets))
 	f.write("number of successfully routed packets:" + str(total_success_packets))
@@ -144,17 +159,18 @@ def log_statistics():
 	f.write("percentage of blocked packets:" + str(blocked_percent))
 	f.write("average number of hops per circuit:" + str(cal_avg_hops())
 	f.write("average cumulative propagation delay per circuit:" + str(cal_avg_delay()))
+'''
+	#f.close()
 
-	f.close()
 
-
-def print_stats ():
+def print_stats():
 	#for debugging purposes
-	f = open("stats.txt", 'r')
+	f = open("log.txt", 'r')
 
 	for line in iter(f):
 		print line 
 	f.close()
+
 
 def cal_avg_delay():
 	#array of delay over, each element calculated individually based off the other delay
@@ -172,7 +188,7 @@ def cal_avg_hops ():
 	avg_hops = total_hops / total_paths
 	return avg_hops
 
-	#completed
+	#completed, need to test
 
 def app_avg_hops(hops_input):
 	#total hops per circuit
@@ -189,28 +205,45 @@ def app_avg_hops(hops_input):
 		arr_total += hops_input
 		arr_avg_hop.append(arr_total / (len(arr_avg_hop)+1))
 
-	#completed
+	#completed, need to test
 
 def validate_args (network, routing, topology, workload, packet_r):
 	vad_boolean = True 
+	'''
+	print "--------------------------"
+	print "valid args debugging log"
+	print network 
+	print routing
+	print topology
+	print workload
+	print packet_r
+	print "---------------------------"
+	'''
 
 	#lots of if statements on input checks
-	if (network != "CIRCUIT" || network != "PACKET"):
+	if network not in ["CIRCUIT", "PACKET"]:
 		vad_boolean = False
-	if (routing != "SHP" || routing != "SDP" || routing != "LLP"):
+		#print "break 1"
+
+	if routing not in ["SHP", "SDP", "LLP"]:
 		vad_boolean = False
+		#print "break 2"
+
 	if (not os.path.exists(topology)):
-		#check= if file exist
 		print "topology does not exist"
+		#print "break 3"
 		vad_boolean = False 
 	if (not os.path.exists(workload)):
-		#check if file exist #2
-		print "work load does not exist"
+		#print "work load does not exist"
 		vad_boolean = False 
 	if (int(packet_r) < 0):
 		vad_boolean = False
+		#print "break 4"
 
+
+	#print "the return value is " + str(vad_boolean)
 	return vad_boolean
+	#working
 
 def main():
 	NETWORK_SCHEME=sys.argv[1]
@@ -229,15 +262,17 @@ def main():
 	init_stats()
 
 	my_graph=create_graph(TOPOLOGY_FILE)
-	path=dijsktra(my_graph,'A','O')
+	
+
+	#path=dijsktra(my_graph,'A','O')
 	#print(visited)
-	print(path)
+	#print(path)
 
-	#workload main (sort this part out for cases)
-	workload(my_graph, NETWORK_SCHEME, ROUTING_SCHEME, WORKLOAD_FILE, packet_rate)
+#workload(graph, n_scheme, r_scheme, w_file, rate):
+	workload(my_graph, NETWORK_SCHEME, ROUTING_SCHEME, WORKLOAD_FILE, PACKET_RATE)
 
-	log_statistics()
-	print_stats()
+	#log_statistics()
+	#print_stats()
 
 	'''
 	debugging the graph graph
