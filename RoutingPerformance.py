@@ -149,7 +149,7 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 
 
 	#get path
-	path, delay = dijsktra (r_scheme,graph, source, destin)
+	path, dij_delay = dijsktra (r_scheme,graph, source, destin)
 	print ("the path is: " + str(path))
 
 	if (path):
