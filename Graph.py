@@ -25,6 +25,6 @@ class Graph(object):
 				if not exist:
 					for ea in self.graph:
 						if end_node==ea.name:
-							info={'Node':ea,'name':end_node,'dtime':dtime,'load':load}
+							info={'Node':ea,'name':end_node,'dtime':dtime,'load':load,'used':0}
 							node.adj_node.append(info)
 

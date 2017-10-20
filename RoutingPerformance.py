@@ -150,11 +150,11 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 
 	#get path
 	path, dij_delay = dijsktra (r_scheme,graph, source, destin)
-	print ("the path is: " + str(path))
+	print ("the path is: " + path)
 
 	if (path):
 		#update the graph and stats, if path exist
-		#graph = update_used (graph, path, +1)#does not work here
+		graph = update_used (graph, path, 1)#does not work here
 		total_success_packets += num_packets
 		total_hops += len(path)
 		append_delay(dij_delay)#append delay here
@@ -166,9 +166,25 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 
 	#last two stats to answer, do we count it if no circuit/path is returned?
 
+dict_to_send = {}
+
 def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, num_packets):
 	#list of packets to route
 	#list of tracked previous packets
+	global total_delay
+	global total_hops
+	global total_success_packets
+	global total_blocked_packets
+	global total_circuits
+
+	global dict_prev_time
+
+
+	#make a list of packets based on thi
+	packet_finish_t = float(curr_time) + float(duration)
+
+
+
 	pass
 
 #main processing function
