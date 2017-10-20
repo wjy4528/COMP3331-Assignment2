@@ -108,40 +108,47 @@ def update_used(my_graph, path, value):
 				break
 	return my_graph
 
-#list of previous path in string format
-#list of previous time in float format
-list_prev_paths = []
-list_prev_ftimes = []
+#dictionary of 
+dict_prev_time = {}
 
-def shp_case(graph, source, destin, curr_time, duration):
+#case only work for circuit switching
+def shp_case(graph, source, destin, curr_time, duration, n_scheme, num_packets):
 	global total_paths
 	global total_hops
-	global list_prev_path
-	global list_prev_ftimes
+	global total_success_packets
+	global total_blocked_packets
 
-	#keep list of finish time for packets so it that path can be updated or not
-	#keep a list of previous paths in array to
-	packet_ft = float(curr_time) + float(duration)
 
-	for i in list_prev_ftimes:
-		if (float(curr_time) >= list_prev_ftimes[0]):
-			#update_used (graph, list_prev_paths, -1)
-			#might need a for loop to go through list get that tuple and delete it
+	global dict_prev_time
 
-	path = dijsktra (graph, source, destin)
-	#update the graph 
-	#update_used (graph, path, value)
-	#append to both prev paths and ftimes list
-
-	#shortest hop path
-
-	#get propagation delay
 	
-	#get hops
-	total_hops += len(path)
+	packet_finish_t = float(curr_time) + float(duration)
 
-	#inc circuit counter, assuming if no path return no circuit inc
+	#if dictionary is not empty
+	if (bool(dict_prev_time)):
+		print ("dictionary is not empty here")
 
+		#sort the dictionary here to make it faster here
+		sorted(dict_prev_time)
+
+		for key,value in dict_prev_time.item():
+			if (float(curr_time) >= key):
+				#update
+				graph = update_used (graph, value, -1)
+				#delete
+				del dict_prev_time[key]
+
+
+	#get path
+	path = dijsktra (n_scheme,graph, source, destin)
+
+	if (path):
+		#update the graph, if path exist
+		graph = update_used (graph, path, 1)
+		total_success_packets += num_packets
+		total_hops += len(path)
+	else: 
+		total_blocked_packets += num_packets
 
 	#last two stats to answer, do we count it if no circuit/path is returned?
 
@@ -172,6 +179,7 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 			num_packets = round(float(rate)*float(val_arr[3]))
 			packet_dur = round(num_packets/int(rate))
 
+			'''
 			print ('\n')
 			print ("debugging here:")
 			print ("----------------------------")
@@ -179,6 +187,7 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 			print ("number of packets: " + str(num_packets))
 			print ("source: " + str(source))
 			print ("destination: " + str(destin))
+			'''
 
 			line = fp.readline()
 			#increment the counter
@@ -195,13 +204,13 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 			if(n_scheme == 'SHP')
 				#shortest hop path
 				#feed function and log
-				shp_case(graph, source, destin)
+				shp_case(graph, source, destin, elapse, packet_dur, n_scheme, num_packets)
 			elif(n_scheme == 'LDP')
 				#least delay path
-				ldp_case(graph, source, destin)
+				#ldp_case(graph, source, destin, curr_time, duration, n_scheme)
 			elif(n_scheme == 'LLP')
 				#least loaded path
-				llp_case(graph, source, destin)
+				#llp_case(graph, source, destin, curr_time, duration, n_scheme)
 			else:
 				print "something went wrong, closing program..."
 				break
