@@ -118,7 +118,7 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 	global total_hops
 	global total_success_packets
 	global total_blocked_packets
-
+	global total_circuits
 
 	global dict_prev_time
 
@@ -154,10 +154,10 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 
 	if (path):
 		#update the graph and stats, if path exist
-		graph = update_used (graph, path, 1)#+1 for packet rate at the time
+		#graph = update_used (graph, path, +1)#does not work here
 		total_success_packets += num_packets
 		total_hops += len(path)
-		app_avg_delay(dij_delay)#append delay here
+		append_delay(dij_delay)#append delay here
 		total_circuits += 1
 
 	else: 
@@ -214,7 +214,7 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 			'''
 
 
-			print ("checking here: "+ n_scheme)
+			#print ("checking here: "+ n_scheme)
 
 			if(n_scheme == 'CIRCUIT'):
 				#print ("working here")
@@ -288,7 +288,7 @@ def cal_avg_delay():
 def append_delay(in_delay):
 	global arr_avg_delay
 
-	if (len(arr_avg_hop) == 0):
+	if (len(arr_avg_delay) == 0):
 		arr_avg_delay.append(in_delay)
 	else:
 		arr_total = 0
@@ -297,7 +297,7 @@ def append_delay(in_delay):
 			arr_total += i
 
 		arr_total += in_delay
-		arr_avg_delay.append(arr_total / (len(arr_avg_hop)+1))
+		arr_avg_delay.append(arr_total / (len(arr_avg_delay)+1))
 
 	#completed, need to test
 
