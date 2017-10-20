@@ -11,16 +11,17 @@ from Graph import Graph
 #program usable :  python RoutingPerformance.py CIRCUIT SDP topology1.txt workloadexample.txt 2
 
 #global counters
-total_circuit_request = 0
+total_request = 0
 total_packets = 0
+
 total_success_packets = 0
 total_blocked_packets = 0
-avg_cumulative_prog = 0
-total_paths = 0
+
+#to cal avg hops
+total_circuits = 0
 total_hops = 0
 
 #arr of global counters
-arr_avg_hop = []
 arr_avg_delay = []
 
 def create_graph(TOPOLOGY_FILE):
@@ -112,8 +113,8 @@ def update_used(my_graph, path, value):
 dict_prev_time = {}
 
 #case only work for circuit switching
-def shp_case(graph, source, destin, curr_time, duration, n_scheme, num_packets):
-	global total_paths
+def circuit_case(graph, source, destin, curr_time, duration, n_scheme, num_packets):
+	global total_delay
 	global total_hops
 	global total_success_packets
 	global total_blocked_packets
@@ -143,28 +144,28 @@ def shp_case(graph, source, destin, curr_time, duration, n_scheme, num_packets):
 	path = dijsktra (n_scheme,graph, source, destin)
 
 	if (path):
-		#update the graph, if path exist
+		#update the graph and stats, if path exist
 		graph = update_used (graph, path, 1)
 		total_success_packets += num_packets
 		total_hops += len(path)
+		app_avg_hops(len(path))
+		total_circuits += 1
+
 	else: 
 		total_blocked_packets += num_packets
+
+	#need to count delay 
 
 	#last two stats to answer, do we count it if no circuit/path is returned?
 
 	pass
 
-def sdp_case(graph, source, destin, curr_time, duration):
-	#shortest delay path
-	pass
-
-def llp_case(graph, source, destin, curr_time, duration):
-	#least load path
+def packet_case(graph, source, destin, curr_time, duration, n_scheme, num_packets):
 	pass
 
 #main processing function
 def workload(graph, n_scheme, r_scheme, w_file, rate):
-	global total_circuit_request
+	global total_request
 
 	with open(w_file) as fp:
 		line = fp.readline()
@@ -191,7 +192,7 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 
 			line = fp.readline()
 			#increment the counter
-			total_circuit_request += 1
+			total_request += 1
 
 			'''
 			print ('\n')
@@ -201,47 +202,17 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 			print ("----------------------------")
 			'''
 
-			if(n_scheme == 'SHP')
+			if(n_scheme == 'CIRCUIT')
 				#shortest hop path
 				#feed function and log
-				shp_case(graph, source, destin, elapse, packet_dur, n_scheme, num_packets)
-			elif(n_scheme == 'LDP')
-				#least delay path
-				#ldp_case(graph, source, destin, curr_time, duration, n_scheme)
-			elif(n_scheme == 'LLP')
-				#least loaded path
-				#llp_case(graph, source, destin, curr_time, duration, n_scheme)
+				circuit_case(graph, source, destin, elapse, packet_dur, n_scheme, num_packets)
+			elif(n_scheme == 'PACKET')
+				#packet_case(graph, source, destin, elapse, packet_dur, n_scheme, num_packets)
 			else:
 				print "something went wrong, closing program..."
 				break
 
 
-	#dijsktra(network_scheme,my_graph, source, destin)
-	#returned string, and delay time
-
-	#log the statistics here
-
-	#till work load function ends
-
-
-	#updating the load on the graph
-	#update_used (graph, path, value)
-	#value = 1 if path is being used and -1 if path use has ended
-	'''
-	cases here 
-		#case 1
-		#use routing protocol once and send packets through the same route
-
-		#case 2
-		#use routing protocol multiple times and 
-		#find appropriate path for each packet (time elapse and time is important here)
-
-		#blocked request
-
-		#busy: route once the circuit has been established
-
-		#need to implement something in graph for this case
-	'''
 
 #stats functions here
 def init_stats():
@@ -257,12 +228,12 @@ def init_stats():
 def log_statistics():
 	#calculates the statistics and appedn to file
 
-	success_percentage_routed_packets = total_success_packets/total_packets
-	blocked_percent = total_blocked_packets/total_packets
+	success_percentage_routed_packets = total_success_request/total_request
+	blocked_percent = total_blocked_request/total_request
 
 	#f = open("stats.txt", 'a+')
 '''
-	f.write("total number of virtual circuit requests:" + str(total_circuit_request))
+	f.write("total number of virtual circuit requests:" + str(total_request))
 	f.write("total number of packets:" + str(total_packets))
 	f.write("number of successfully routed packets:" + str(total_success_packets))
 	f.write("percentage of successfully routed packets:" + str(success_percentage_routed_packets)) 
