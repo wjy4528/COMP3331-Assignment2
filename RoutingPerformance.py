@@ -113,7 +113,7 @@ def update_used(my_graph, path, value):
 dict_prev_time = {}
 
 #case only work for circuit switching
-def circuit_case(graph, source, destin, curr_time, duration, r_scheme, num_packets):
+def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, num_packets):
 	global total_delay
 	global total_hops
 	global total_success_packets
@@ -123,7 +123,15 @@ def circuit_case(graph, source, destin, curr_time, duration, r_scheme, num_packe
 	global dict_prev_time
 
 	
+	print ("\n")
+	print ("circuit switching---------------------")
+	print ("source: " + source)
+	print ("destination: " + destin)
+	print ("the network scheme: " + r_scheme)
+
 	packet_finish_t = float(curr_time) + float(duration)
+
+	print ("packet finish time: " + str(packet_finish_t))
 
 	#if dictionary is not empty
 	if (bool(dict_prev_time)):
@@ -141,7 +149,8 @@ def circuit_case(graph, source, destin, curr_time, duration, r_scheme, num_packe
 
 
 	#get path
-	path, dij_delay = dijsktra (n_scheme,graph, source, destin)
+	path, delay = dijsktra (r_scheme,graph, source, destin)
+	print ("the path is: " + str(path))
 
 	if (path):
 		#update the graph and stats, if path exist
@@ -154,24 +163,25 @@ def circuit_case(graph, source, destin, curr_time, duration, r_scheme, num_packe
 	else: 
 		total_blocked_packets += num_packets
 
-	#need to count delay 
 
 	#last two stats to answer, do we count it if no circuit/path is returned?
 
-	pass
-
-def packet_case(graph, source, destin, curr_time, duration, r_scheme, num_packets):
-
+def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, num_packets):
+	#list of packets to route
+	#list of tracked previous packets
 	pass
 
 #main processing function
 def workload(graph, n_scheme, r_scheme, w_file, rate):
+
 	global total_request
 
 	with open(w_file) as fp:
+
 		line = fp.readline()
 
 		while line:
+
 			val_arr = line.split(" ")
 			#m = re.search('(.*\d+) (/w) (/w) (.*\d+)', line)
 			
@@ -181,7 +191,7 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 			num_packets = round(float(rate)*float(val_arr[3]))
 			packet_dur = round(num_packets/int(rate))
 
-			'''
+			'''			
 			print ('\n')
 			print ("debugging here:")
 			print ("----------------------------")
@@ -203,14 +213,18 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 			print ("----------------------------")
 			'''
 
-			if(n_scheme == 'CIRCUIT')
+
+			print ("checking here: "+ n_scheme)
+
+			if(n_scheme == 'CIRCUIT'):
+				#print ("working here")
 				#shortest hop path
 				#feed function and log
-				circuit_case(graph, source, destin, elapse, packet_dur, r_scheme, num_packets)
-			elif(n_scheme == 'PACKET')
-				#packet_case(graph, source, destin, elapse, packet_dur, r_scheme, num_packets)
+				circuit_case(graph, source, destin, elapse, packet_dur, n_scheme, r_scheme, num_packets)
+			elif(n_scheme == 'PACKET'):
+				packet_case(graph, source, destin, elapse, packet_dur, n_scheme, r_scheme, num_packets)
 			else:
-				print "something went wrong, closing program..."
+				print ("something went wrong, closing program...")
 				break
 
 
@@ -272,7 +286,7 @@ def cal_avg_delay():
 
 #need to test this 
 def append_delay(in_delay):
-	global arr_avg_delay = []
+	global arr_avg_delay
 
 	if (len(arr_avg_hop) == 0):
 		arr_avg_delay.append(in_delay)
