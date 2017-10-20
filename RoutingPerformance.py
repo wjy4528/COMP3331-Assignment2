@@ -113,7 +113,7 @@ def update_used(my_graph, path, value):
 dict_prev_time = {}
 
 #case only work for circuit switching
-def circuit_case(graph, source, destin, curr_time, duration, n_scheme, num_packets):
+def circuit_case(graph, source, destin, curr_time, duration, r_scheme, num_packets):
 	global total_delay
 	global total_hops
 	global total_success_packets
@@ -134,21 +134,21 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, num_packe
 
 		for key,value in dict_prev_time.item():
 			if (float(curr_time) >= key):
-				#update
+				#update, -1 for packet atm
 				graph = update_used (graph, value, -1)
 				#delete
 				del dict_prev_time[key]
 
 
 	#get path
-	path = dijsktra (n_scheme,graph, source, destin)
+	path, dij_delay = dijsktra (n_scheme,graph, source, destin)
 
 	if (path):
 		#update the graph and stats, if path exist
-		graph = update_used (graph, path, 1)
+		graph = update_used (graph, path, 1)#+1 for packet rate at the time
 		total_success_packets += num_packets
 		total_hops += len(path)
-		app_avg_hops(len(path))
+		app_avg_delay(dij_delay)#append delay here
 		total_circuits += 1
 
 	else: 
@@ -160,7 +160,8 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, num_packe
 
 	pass
 
-def packet_case(graph, source, destin, curr_time, duration, n_scheme, num_packets):
+def packet_case(graph, source, destin, curr_time, duration, r_scheme, num_packets):
+
 	pass
 
 #main processing function
@@ -205,9 +206,9 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 			if(n_scheme == 'CIRCUIT')
 				#shortest hop path
 				#feed function and log
-				circuit_case(graph, source, destin, elapse, packet_dur, n_scheme, num_packets)
+				circuit_case(graph, source, destin, elapse, packet_dur, r_scheme, num_packets)
 			elif(n_scheme == 'PACKET')
-				#packet_case(graph, source, destin, elapse, packet_dur, n_scheme, num_packets)
+				#packet_case(graph, source, destin, elapse, packet_dur, r_scheme, num_packets)
 			else:
 				print "something went wrong, closing program..."
 				break
@@ -221,28 +222,31 @@ def init_stats():
 	fname = "./log.txt"
 	if (os.path.exists(fname)):
 		print ("log file exist in directory")
+		print ("appending to file ")
 	else:
 		print ("no log file exist in directory")
 	
 
-def log_statistics():
+def log_statistics(routing_type):
 	#calculates the statistics and appedn to file
 
-	success_percentage_routed_packets = total_success_request/total_request
-	blocked_percent = total_blocked_request/total_request
+	success_percentage_routed_packets = total_success_packets/total_packets
+	blocked_percent = total_blocked_packets/total_success_packets
+	avg_hops = total_hops / total_circuits
 
-	#f = open("stats.txt", 'a+')
-'''
+	f = open("log.txt", 'a+')
+
+	f.write(routing_type+"-----------------------------------------------------")
 	f.write("total number of virtual circuit requests:" + str(total_request))
 	f.write("total number of packets:" + str(total_packets))
 	f.write("number of successfully routed packets:" + str(total_success_packets))
 	f.write("percentage of successfully routed packets:" + str(success_percentage_routed_packets)) 
 	f.write("number of blocked packets:" + str(total_blocked_packets))
 	f.write("percentage of blocked packets:" + str(blocked_percent))
-	f.write("average number of hops per circuit:" + str(cal_avg_hops())
+	f.write("average number of hops per circuit:" + str(avg_hops))
 	f.write("average cumulative propagation delay per circuit:" + str(cal_avg_delay()))
-'''
-	#f.close()
+
+	f.close()
 
 
 def print_stats():
@@ -262,30 +266,24 @@ def cal_avg_delay():
 	for i in arr_avg_delay:
 		total_delay += i
 
-	avg_delay = total_delay / total_paths
+	avg_delay = total_delay / len(arr_avg_delay)
 	return avg_delay
 	#completed
 
-def cal_avg_hops ():
-	avg_hops = total_hops / total_paths
-	return avg_hops
-
-	#completed, need to test
-
-def app_avg_hops(hops_input):
-	#total hops per circuit
-	#over total circuits
-	global arr_avg_hop
+#need to test this 
+def append_delay(in_delay):
+	global arr_avg_delay = []
 
 	if (len(arr_avg_hop) == 0):
-		arr_avg_hop.append(hops_input)
+		arr_avg_delay.append(in_delay)
 	else:
 		arr_total = 0
-		for i in arr_avg_hop:
+
+		for i in arr_avg_delay:
 			arr_total += i
 
-		arr_total += hops_input
-		arr_avg_hop.append(arr_total / (len(arr_avg_hop)+1))
+		arr_total += in_delay
+		arr_avg_delay.append(arr_total / (len(arr_avg_hop)+1))
 
 	#completed, need to test
 
@@ -350,7 +348,6 @@ def main():
 	#print(visited)
 	#print(path)
 
-#workload(graph, n_scheme, r_scheme, w_file, rate):
 	workload(my_graph, NETWORK_SCHEME, ROUTING_SCHEME, WORKLOAD_FILE, PACKET_RATE)
 
 	#log_statistics()
