@@ -38,36 +38,75 @@ def create_graph(TOPOLOGY_FILE):
 	return my_graph
 
 
-def dijsktra(graph,start_node,end_node):
-	visited={start_node:0}
-	path={}
-	nodes=set(graph.graph)
-	while nodes:
-		min_node=None
-		for node in nodes:
-			if node.name in visited:
-				if min_node is None:
-					min_node=node
-				elif visited[node.name]<visited[min_node.name]:
-					min_node=node
-		if min_node is None:
-			break
-		nodes.remove(min_node)
-		current_weight=visited[min_node.name]
-		for edge in min_node.adj_node:
-			weight=current_weight+int(edge['dtime'])
-			if edge['name'] not in visited or weight < visited[edge['name']]:
-				visited[edge['name']]=weight
-				path[edge['name']]=min_node.name
-	search_key=end_node
-	path_to_return=search_key
+def dijsktra(NETWORK_SCHEME, graph,start_node,end_node):
+	if NETWORK_SCHEME == "SHP" or NETWORK_SCHEME == "SDP":
+		visited={start_node:0}
+		path={}
+		nodes=set(graph.graph)
+		while nodes:
+			min_node=None
+			for node in nodes:
+				if node.name in visited:
+					if min_node is None:
+						min_node=node
+					elif visited[node.name]<visited[min_node.name]:
+						min_node=node
+			if min_node is None:
+				break
+			nodes.remove(min_node)
+			current_weight=visited[min_node.name]
+			for edge in min_node.adj_node:
+				if NETWORK_SCHEME=="SHP":
+					weight=current_weight+1
+				else:
+					weight=current_weight+int(edge['dtime'])
+				if edge['name'] not in visited or weight < visited[edge['name']]:
+					visited[edge['name']]=weight
+					path[edge['name']]=min_node.name
+		search_key=end_node
+		path_to_return=search_key
+		
+		while search_key!=start_node:
+			temp=path[search_key]
+			path_to_return=temp+path_to_return
+			search_key=temp
 
-	while search_key!=start_node:
-		temp=path[search_key]
-		path_to_return=temp+path_to_return
-		search_key=temp
 
-	return path_to_return
+		if NETWORK_SCHEME =="SHP":
+			return path_to_return,len(path_to_return)
+		else:
+			total_delay=0
+			for i in range(0,len(path_to_return)-1):
+				node_name=path_to_return[i]
+				adj_node_name=path_to_return[i+1]
+				for each_1 in graph.graph:
+					if each_1.name==node_name:
+						for each_2 in each_1.adj_node:
+							if each_2['name']==adj_node_name:
+								total_delay+=int(each_2['dtime'])
+								break
+						break
+			return path_to_return,total_delay
+	else:
+		pass
+
+
+def update_used(my_graph, path, value):
+	for i in range(0,len(path)-1):
+		node_name=path[i]
+		adj_node_name=path[i+1]
+		for each_1 in my_graph.graph:
+			if each_1.name==node_name:
+				for each_2 in each_1.adj_node:
+					if each_2['name']==adj_node_name:
+						each_2['used']+=value
+						for each_3 in each_2['Node'].adj_node:
+							if each_3['name']==node_name:
+								each_3['used']+=value
+								break
+						break
+				break
+	return my_graph
 
 #list of previous path in string format
 #list of previous time in float format
