@@ -168,6 +168,8 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 		append_delay(dij_delay)#append delay here
 		total_circuits += 1
 
+		#append to dict_prev_time
+		dict_prev_time[packet_finish_t ] = path
 	else: 
 		total_blocked_packets += num_packets
 
@@ -178,6 +180,9 @@ dict_to_send = {}
 dict_to_finish = {}
 
 def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, num_packets, rate):
+
+	#make some overlapping cases
+
 	#list of packets to route
 	#list of tracked previous packets
 	global total_delay
@@ -197,11 +202,50 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 	#check if the to finish list is empty
 	if (bool (dict_to_finish)):
 		#if not empty, mark off
+		sorted(dict_to_finish)
+
+		#eg {0.63->AB}
+		for key,value in dict_to_finish.item():
+			if (float(curr_time) >= key):
+				#update, -1 for packet atm
+				graph = update_used (graph, value, -1)
+				#delete
+				del dict_to_finish[key]
+				#does not update stats
+
 
 	if (bool (dict_to_send))
 		#if not empty, get path
+		sorted(dict_to_send)
 
+		#eg {0.63->AB}
+		for key,value in dict_to_send.item():
+			if (float(curr_time) >= key):
+				#update, +1 for packet atm
+				dij_list = list(value)
 
+				#make a dij request here 
+				path, dij_delay = dijsktra(graph, dij_list[0], dij_list[1])
+
+				if (path):
+					#add finish list to mark off
+					packet_finish_t = key + 1/rate
+
+					dict_to_finishp[packet_finish_t] = path
+
+					#log stats here
+					graph = update_used (graph, path, 1)
+					total_success_packets += num_packets
+					total_hops += len(path)
+					append_delay(dij_delay)
+					total_circuits += 1
+				else:
+					total_blocked_packets += 1
+
+				#delete
+				del dict_to_send[key]
+
+				#add to finish list
 
 	#for debbuging
 	print ("\n")
