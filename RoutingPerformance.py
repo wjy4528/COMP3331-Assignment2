@@ -322,7 +322,7 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 			elapse = val_arr[0]
 			source = val_arr[1]
 			destin = val_arr[2]
-			num_packets = round(float(rate)*float(val_arr[3]))
+			num_packets = math.floor(float(rate)*float(val_arr[3]))
 			request_duration = float(val_arr[3])
 
 			'''			
