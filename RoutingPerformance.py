@@ -220,9 +220,6 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 
 	segment_finish_time = float(curr_time) + float(duration)
 
-	print ("the end time for this request:" + str(segment_finish_time))
-
-
 	#check if the to finish list is empty
 	if (bool (dict_to_finish)):
 		#if not empty, mark off
@@ -273,12 +270,15 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 
 	#for debbuging
 	print ("\n")
-	print ("circuit switching---------------------")
+	print ("circuit switching debugging ---------------------")
 	print ("source: " + source)
 	print ("destination: " + destin)
 	print ("the network scheme: " + r_scheme)
+	print ("the start time: "+str(curr_time))
+	the_finish_time = float(curr_time) + float(duration)
 
 	print("\n")
+
 	check_total_packets = str(round (float(duration)*float(rate)))
 	print ("total number of packets for the segment: " + check_total_packets)
 
@@ -288,13 +288,19 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 	count = 1
 
 	#add to start list, process the ones needed
-	while (i < segment_finish_time):
+	while (i < the_finish_time):
 		print (str(count) +". " +str(i) + " : " + source + " -> " + destin)
 		count += 1
 		i += iterator_t
 
 		#process first packet , and insert the rest
 
+	print ("the t_rate per packet: "+ str(iterator_t))
+	print ("the finish time should be: "+str(the_finish_time))
+
+	#temp here
+	total_hops += 1
+	total_circuits += 1
 
 
 
@@ -316,7 +322,7 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 			elapse = val_arr[0]
 			source = val_arr[1]
 			destin = val_arr[2]
-			num_packets = math.floor(float(rate)*float(val_arr[3]))
+			num_packets = round(float(rate)*float(val_arr[3]))
 			request_duration = float(val_arr[3])
 
 			'''			
