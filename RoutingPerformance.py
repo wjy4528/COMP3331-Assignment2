@@ -112,7 +112,7 @@ def update_used(my_graph, path, value):
 #dictionary of 
 dict_prev_time = {}
 
-#case only work for circuit switching
+#case only work for circuit switching, need to test
 def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, num_packets):
 	global total_delay
 	global total_hops
@@ -167,8 +167,9 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 	#last two stats to answer, do we count it if no circuit/path is returned?
 
 dict_to_send = {}
+dict_to_finish = {}
 
-def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, num_packets):
+def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, num_packets, rate):
 	#list of packets to route
 	#list of tracked previous packets
 	global total_delay
@@ -177,15 +178,47 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 	global total_blocked_packets
 	global total_circuits
 
-	global dict_prev_time
+	global dict_to_send
+	global dict_to_finish
+
+	segment_finish_time = float(curr_time) + float(duration)
+
+	print ("the end time for this request:" + str(segment_finish_time))
 
 
-	#make a list of packets based on thi
-	packet_finish_t = float(curr_time) + float(duration)
+	#check if the to finish list is empty
+	if (bool (dict_to_finish)):
+		#if not empty, mark off
+
+	if (bool (dict_to_send))
+		#if not empty, get path
 
 
 
-	pass
+	#for debbuging
+	print ("\n")
+	print ("circuit switching---------------------")
+	print ("source: " + source)
+	print ("destination: " + destin)
+	print ("the network scheme: " + r_scheme)
+
+	print("\n")
+	check_total_packets = str(round (float(duration)*float(rate)))
+	print ("total number of packets for the segment: " + check_total_packets)
+
+	#push in the first element firsts
+	i = float(curr_time)
+	iterator_t = 1/int(rate)
+	count = 1
+
+	#add to list 
+	while (i < segment_finish_time):
+		print (str(count) +". " +str(i) + " : " + source + " -> " + destin)
+		i += iterator_t
+		count += 1
+
+
+
 
 #main processing function
 def workload(graph, n_scheme, r_scheme, w_file, rate):
@@ -238,7 +271,7 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 				#feed function and log
 				circuit_case(graph, source, destin, elapse, packet_dur, n_scheme, r_scheme, num_packets)
 			elif(n_scheme == 'PACKET'):
-				packet_case(graph, source, destin, elapse, packet_dur, n_scheme, r_scheme, num_packets)
+				packet_case(graph, source, destin, elapse, packet_dur, n_scheme, r_scheme, num_packets, rate)
 			else:
 				print ("something went wrong, closing program...")
 				break
