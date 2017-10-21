@@ -1,6 +1,13 @@
-SDP-----------------------------------------------------
-total number of virtual circuit requests:5884
+total number of virtual connection requests:5884
 total number of packets:534117
+<<<<<<< HEAD
+number of successfully routed packets:528105
+percentage of successfully routed packets:98.87
+number of blocked packets:6012
+percentage of blocked packets:1.13
+average number of hops per circuit:5.02
+average cumulative propagation delay per circuit:268.52
+=======
 number of successfully routed packets:526527
 percentage of successfully routed packets:98.57896303618871
 number of blocked packets:7590
@@ -242,3 +249,4 @@ percentage of blocked packets:9.78
 average number of hops per circuit:3.6494458012399025
 average cumulative propagation delay per circuit:241.0
 >>>>>>> c369614084c422012a2f4b0e155fa4ebdfcad185
+>>>>>>> a0b44461bf1f179e8282f131c0b628dc3827125e
