@@ -34,6 +34,7 @@ number of blocked packets:5119
 percentage of blocked packets:1.4416022934965966
 average number of hops per circuit:5.05188112008246
 average cumulative propagation delay per circuit:281.943376049446
+<<<<<<< HEAD
 LLP-----------------------------------------------------
 total number of virtual circuit requests:5884
 total number of packets:355091
@@ -151,3 +152,14 @@ number of blocked packets:2170
 percentage of blocked packets:1.232485360686557
 average number of hops per circuit:5.025244719216898
 average cumulative propagation delay per circuit:272.76396506350227
+=======
+SDP-----------------------------------------------------
+total number of virtual circuit requests:11
+total number of packets:410
+number of successfully routed packets:31
+percentage of successfully routed packets:7.560975609756097
+number of blocked packets:379
+percentage of blocked packets:92.4390243902439
+average number of hops per circuit:2.6666666666666665
+average cumulative propagation delay per circuit:1.2222222222222223
+>>>>>>> 25c97a62224d37699f530752ff98633abfdcf0c9

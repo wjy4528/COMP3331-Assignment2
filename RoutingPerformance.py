@@ -165,7 +165,7 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 		print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
 
 		for key in list(dict_prev_time.keys()):
-			if (float(curr_time) >= key):
+			if (float(curr_time) >= float(key)):
 				#update, -1 for packet atm
 				print ("\n")
 				print ("checking mark off **************************")
@@ -518,7 +518,9 @@ def main():
 		print (str(counteri)+ ". " + str(i))
 		counteri += 1
 
-
+	print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+	print ("dictionary size at the end of the program: " + str(len(list(dict_prev_time))))
+	print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
 	log_statistics(ROUTING_SCHEME)
 	print_stats()
 
