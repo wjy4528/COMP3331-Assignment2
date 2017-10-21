@@ -205,6 +205,7 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 
 	global dict_to_send
 	global dict_to_finish
+	global total_packets
 
 	segment_finish_time = float(curr_time) + float(duration)
 
@@ -218,7 +219,7 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 		sorted(dict_to_finish)
 
 		#eg {0.63->AB}
-		for key in list(dict_to_finish):
+		for key in list(dict_to_finish.keys()):
 			if (float(curr_time) >= float(key)):
 				#update, -1 for packet atm
 				graph = update_used (graph, dict_to_finish[key], -1)
@@ -231,11 +232,11 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 		#if not empty, get path
 		sorted(dict_to_send)
 
-		#eg {0.63->AB}
-		for key,value in dict_to_send.item():
-			if (float(curr_time) >= key):
+		#eg {0.63->AB} based on fifo
+		for key in list(dict_to_send.keys()):
+			if (float(curr_time) >= float(key)):
 				#update, +1 for packet atm
-				dij_list = list(value)
+				dij_list = list(dict_to_send[key])
 
 
 				#make a dij request here 
@@ -267,9 +268,10 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 	print ("the network scheme: " + r_scheme)
 
 	print("\n")
-	check_total_packets = str(round (float(duration)*float(rate)))
-	print ("total number of packets for the segment: " + check_total_packets)
+	check_total_packets = math.floor(float(duration)*float(rate))
+	print ("total number of packets for the segment: " + str(check_total_packets))
 
+	total_packets += check_total_packets
 	#push in the first element firsts
 	i = float(curr_time)
 	iterator_t = 1/int(rate)
@@ -285,7 +287,8 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 
 
 
-
+def finishing_blow (graph, rate):
+	pass
 
 #main processing function
 def workload(graph, n_scheme, r_scheme, w_file, rate):
@@ -360,9 +363,14 @@ def init_stats():
 def log_statistics(routing_type):
 	#calculates the statistics and appedn to file
 
-	success_percentage_routed_packets = (total_success_packets/total_packets)*100
-	blocked_percent = (total_blocked_packets/total_packets)*100
+	success_percentage_routed_packets = round((total_success_packets/total_packets)*100, 2)
+	blocked_percent = round((total_blocked_packets/total_packets)*100, 2)
+
+	print("packet checking here")
+	print("the total_hops: "+str(total_hops) + " and the total_circuits" + str(total_circuits))
+
 	avg_hops = total_hops / total_circuits
+
 
 	f = open("log.txt", 'a+')
 
@@ -407,7 +415,7 @@ def cal_avg_delay():
 		total_delay += i
 
 	avg_delay = total_delay / len(arr_avg_delay)
-	return avg_delay
+	return round(avg_delay, 2)
 	#completed
 
 #need to test this 
@@ -495,7 +503,7 @@ def main():
 
 	workload(my_graph, NETWORK_SCHEME, ROUTING_SCHEME, WORKLOAD_FILE, PACKET_RATE)
 
-
+	print ("\n")
 	print ("temp debugging =============================")
 	print ("the circuit count: "+ str(total_circuits))
 
