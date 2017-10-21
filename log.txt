@@ -163,3 +163,43 @@ percentage of blocked packets:92.4390243902439
 average number of hops per circuit:2.6666666666666665
 average cumulative propagation delay per circuit:1.2222222222222223
 >>>>>>> 25c97a62224d37699f530752ff98633abfdcf0c9
+SDP-----------------------------------------------------
+total number of virtual connection requests:11
+total number of packets:410
+number of successfully routed packets:0
+percentage of successfully routed packets:0.0
+number of blocked packets:0
+percentage of blocked packets:0.0
+average number of hops per circuit:1.0
+SDP-----------------------------------------------------
+total number of virtual connection requests:11
+total number of packets:410
+number of successfully routed packets:0
+percentage of successfully routed packets:0.0
+number of blocked packets:0
+percentage of blocked packets:0.0
+average number of hops per circuit:1.0
+SDP-----------------------------------------------------
+total number of virtual connection requests:11
+total number of packets:410
+number of successfully routed packets:0
+percentage of successfully routed packets:0.0
+number of blocked packets:0
+percentage of blocked packets:0.0
+average number of hops per circuit:1.0
+SDP-----------------------------------------------------
+total number of virtual connection requests:11
+total number of packets:416
+number of successfully routed packets:0
+percentage of successfully routed packets:0.0
+number of blocked packets:0
+percentage of blocked packets:0.0
+average number of hops per circuit:1.0
+SDP-----------------------------------------------------
+total number of virtual connection requests:11
+total number of packets:416
+number of successfully routed packets:0
+percentage of successfully routed packets:0.0
+number of blocked packets:0
+percentage of blocked packets:0.0
+average number of hops per circuit:1.0
