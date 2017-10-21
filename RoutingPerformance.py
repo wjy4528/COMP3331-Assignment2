@@ -180,9 +180,6 @@ dict_to_send = {}
 dict_to_finish = {}
 
 def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, num_packets, rate):
-
-	#make some overlapping cases
-
 	#list of packets to route
 	#list of tracked previous packets
 	global total_delay
@@ -235,7 +232,7 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 
 					#log stats here
 					graph = update_used (graph, path, 1)
-					total_success_packets += num_packets
+					total_success_packets += 1
 					total_hops += len(path)
 					append_delay(dij_delay)
 					total_circuits += 1
@@ -244,8 +241,6 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 
 				#delete
 				del dict_to_send[key]
-
-				#add to finish list
 
 	#for debbuging
 	print ("\n")
@@ -263,11 +258,14 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 	iterator_t = 1/int(rate)
 	count = 1
 
-	#add to list 
+	#add to start list, process the ones needed
 	while (i < segment_finish_time):
 		print (str(count) +". " +str(i) + " : " + source + " -> " + destin)
-		i += iterator_t
 		count += 1
+		i += iterator_t
+
+		#process first packet , and insert the rest
+
 
 
 
