@@ -6,6 +6,8 @@ import os.path
 import math
 import re
 from Graph import Graph
+from random import randint
+
 
 
 #program usable :  python3 RoutingPerformance.py CIRCUIT SDP topology1.txt workloadexample.txt 2
@@ -57,6 +59,9 @@ def dijsktra(ROUTING_SCHEME, graph,start_node,end_node):
 					min_node=node
 				elif visited[node.name]<visited[min_node.name]:
 					min_node=node
+				elif visited[node.name]==visited[min_node.name]:
+					if randint(0,1)==0:
+						min_node=node
 		if min_node is None:
 			break
 		nodes.remove(min_node)
