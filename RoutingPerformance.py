@@ -62,20 +62,20 @@ def dijsktra(ROUTING_SCHEME, graph,start_node,end_node):
 		nodes.remove(min_node)
 		current_weight=visited[min_node.name]
 		for edge in min_node.adj_node:
-			if edge['Full']==False:
-				if ROUTING_SCHEME=="SHP":
-					weight=current_weight+1
-				elif ROUTING_SCHEME== "SDP":
-					weight=current_weight+int(edge['dtime'])
+			#if edge['Full']==False:
+			if ROUTING_SCHEME=="SHP":
+				weight=current_weight+1
+			elif ROUTING_SCHEME== "SDP":
+				weight=current_weight+int(edge['dtime'])
+			else:
+				current_load=float(edge['used'])/float(edge['load'])
+				if current_weight<current_load:
+					weight=current_load
 				else:
-					current_load=float(edge['used'])/float(edge['load'])
-					if current_weight<current_load:
-						weight=current_load
-					else:
-						weight=current_weight
-				if edge['name'] not in visited or weight < visited[edge['name']]:
-					visited[edge['name']]=weight
-					path[edge['name']]=min_node.name
+					weight=current_weight
+			if edge['name'] not in visited or weight < visited[edge['name']]:
+				visited[edge['name']]=weight
+				path[edge['name']]=min_node.name
 	search_key=end_node
 	path_to_return=search_key
 	
@@ -88,6 +88,7 @@ def dijsktra(ROUTING_SCHEME, graph,start_node,end_node):
 			return "",0
 	
 	total_delay=0
+	blocked=False
 	for i in range(0,len(path_to_return)-1):
 		node_name=path_to_return[i]
 		adj_node_name=path_to_return[i+1]
@@ -96,9 +97,15 @@ def dijsktra(ROUTING_SCHEME, graph,start_node,end_node):
 				for each_2 in each_1.adj_node:
 					if each_2['name']==adj_node_name:
 						total_delay+=int(each_2['dtime'])
+						if each_2['Full']==True:
+							blocked=True
 						break
 				break
-	return path_to_return,total_delay
+	if blocked:
+		return "",0
+		
+	else:
+		return path_to_return,total_delay
 
 def update_used(my_graph, path, value):
 	for i in range(0,len(path)-1):
