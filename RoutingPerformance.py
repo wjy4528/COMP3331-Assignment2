@@ -136,10 +136,11 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 	print ("source: " + source)
 	print ("destination: " + destin)
 	print ("the network scheme: " + r_scheme)
+	print ("the start time: " + str(curr_time))
+	print ("the duration: " + str(duration))
 
 	packet_finish_t = float(curr_time) + float(duration)
-
-	print ("packet finish time: " + str(packet_finish_t))
+	print ("the finish time: "+ str(packet_finish_t))
 
 	#if dictionary is not empty
 	if (bool(dict_prev_time)):
@@ -151,6 +152,9 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 		for key in list(dict_prev_time.keys()):
 			if (float(curr_time) >= key):
 				#update, -1 for packet atm
+				print ("\n")
+				print ("checking mark off **************************")
+				print ("checking the key: "+ str(key))
 				print("checking path: " + dict_prev_time[key])
 				graph = update_used (graph, dict_prev_time[key], -1)
 				#delete
@@ -159,7 +163,7 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 
 	#get path
 	path, dij_delay = dijsktra (r_scheme,graph, source, destin)
-	print ("the path is: " + path)
+	print ("the path return from dij is: " + path)
 
 	if (path):
 		#update the graph and stats, if path exist
