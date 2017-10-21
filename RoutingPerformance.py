@@ -372,15 +372,20 @@ def init_stats():
 def log_statistics(routing_type):
 	#calculates the statistics and appedn to file
 
-	success_percentage_routed_packets = (total_success_packets/total_packets)*100
-	blocked_percent = (total_blocked_packets/total_packets)*100
-	avg_hops = total_hops / total_circuits
+
+	success_percentage_routed_packets = round((total_success_packets/total_packets)*100, 2)
+	blocked_percent = round((total_blocked_packets/total_packets)*100, 2)
+
+	print("packet checking here")
+	print("the total_hops: "+str(total_hops) + " and the total_circuits" + str(total_circuits))
+
+	avg_hops = round((total_hops / total_circuits), 2)
 
 	f = open("log.txt", 'a+')
 
 	f.write(routing_type+"-----------------------------------------------------")
 	f.write("\n")
-	f.write("total number of virtual circuit requests:" + str(total_request))
+	f.write("total number of virtual connection requests:" + str(total_request))
 	f.write("\n")
 	f.write("total number of packets:" + str(total_packets))
 	f.write("\n")
