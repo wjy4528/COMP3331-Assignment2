@@ -241,20 +241,22 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 		sorted(dict_to_send)
 
 		#eg {0.63->AB}
-		for key,value in dict_to_send.item():
-			if (float(curr_time) >= key):
+		for key in list(dict_to_send.keys()):
+			if (float(curr_time) >= float(key)):
 				#update, +1 for packet atm
-				dij_list = list(value)
+				dij_list = list(dict_to_send[key])
 
+				print("the source is "+ dij_list[0])
+				print("the destination is "+dij_list[1])
 
 				#make a dij request here 
-				path, dij_delay = dijsktra(graph, dij_list[0], dij_list[1])
+				path, dij_delay = dijsktra(r_scheme, graph, dij_list[0], dij_list[1])
 
 				if (path):
 					#add finish list to mark off
-					packet_finish_t = key + 1/rate
+					packet_finish_t = key + 1/float(rate)
 
-					dict_to_finishp[packet_finish_t] = path
+					dict_to_finish[packet_finish_t] = path
 
 					#log stats here
 					graph = update_used (graph, path, 1)
@@ -279,30 +281,41 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 
 	print("\n")
 
-	check_total_packets = str(round (float(duration)*float(rate)))
-	print ("total number of packets for the segment: " + check_total_packets)
-
-	#push in the first element firsts
+	#push in the first element into finish
 	i = float(curr_time)
 	iterator_t = 1/int(rate)
 	count = 1
 
-	#add to start list, process the ones needed
-	while (i < the_finish_time):
-		print (str(count) +". " +str(i) + " : " + source + " -> " + destin)
-		count += 1
-		i += iterator_t
+	#process first packet , and insert the rest
+	first_path, first_delay = dijsktra(r_scheme, graph, source, destin)
 
-		#process first packet , and insert the rest
+	if (first_path):
+		#update stats
+		graph = update_used (graph, first_path, 1)
+		total_success_packets += 1
+		total_hops += len(first_path)
+		append_delay(first_delay)#append delay here
+		total_circuits += 1
+
+		#append to dict_prev_time
+		dict_to_finish[i+iterator_t] = first_path 
+	else:
+		total_blocked_packets += 1
+
+	#start adding segments from the second element
+	i = i + iterator_t
+
+	#add to start list, process the ones needed
+	while (i < (the_finish_time-iterator_t)):
+		#print (str(count) +". " +str(i) + " : " + source + " -> " + destin)
+		#count += 1
+		dict_to_send[i] = source+destin
+
+		i += iterator_t
 
 	print ("the t_rate per packet: "+ str(iterator_t))
 	print ("the finish time should be: "+str(the_finish_time))
-
-	#temp here
-	total_hops += 1
-	total_circuits += 1
-
-
+	print ("the number of packets should actually be: "+ str(math.floor(float(duration)*float(rate))))
 
 
 #main processing function
@@ -378,10 +391,12 @@ def init_stats():
 def log_statistics(routing_type):
 	#calculates the statistics and appedn to file
 
-
+	print ("packet debugging here------------------------------------------------------------")
+	
 	success_percentage_routed_packets = round((total_success_packets/total_packets)*100, 2)
 	blocked_percent = round((total_blocked_packets/total_packets)*100, 2)
 
+	print ("packet debugging here------------------------------------------------------------")
 	print("packet checking here")
 	print("the total_hops: "+str(total_hops) + " and the total_circuits" + str(total_circuits))
 
