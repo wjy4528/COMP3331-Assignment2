@@ -381,27 +381,17 @@ def log_statistics(routing_type):
 
 	avg_hops = round((total_hops / total_circuits), 2)
 
-	f = open("log.txt", 'a+')
+	f = open("log.txt", 'w')
 
-	f.write(routing_type+"-----------------------------------------------------")
-	f.write("\n")
-	f.write("total number of virtual connection requests:" + str(total_request))
-	f.write("\n")
-	f.write("total number of packets:" + str(total_packets))
-	f.write("\n")
-	f.write("number of successfully routed packets:" + str(total_success_packets))
-	f.write("\n")
-	f.write("percentage of successfully routed packets:" + str(success_percentage_routed_packets))
-	f.write("\n") 
-	f.write("number of blocked packets:" + str(total_blocked_packets))
-	f.write("\n")
-	f.write("percentage of blocked packets:" + str(blocked_percent))
-	f.write("\n")
-	f.write("average number of hops per circuit:" + str(avg_hops))
-	f.write("\n")
-	f.write("average cumulative propagation delay per circuit:" + str(cal_avg_delay()))
-
-	f.write("\n")
+	#f.write(routing_type+"-----------------------------------------------------")
+	f.write("total number of virtual connection requests:" + str(total_request)+'\n')
+	f.write("total number of packets:" + str(total_packets)+'\n')
+	f.write("number of successfully routed packets:" + str(total_success_packets)+'\n')
+	f.write("percentage of successfully routed packets:" + str(success_percentage_routed_packets)+'\n')
+	f.write("number of blocked packets:" + str(total_blocked_packets)+'\n')
+	f.write("percentage of blocked packets:" + str(blocked_percent)+'\n')
+	f.write("average number of hops per circuit:" + str(avg_hops)+'\n')
+	f.write("average cumulative propagation delay per circuit:" + str(cal_avg_delay())+'\n')
 
 	f.close()
 
@@ -409,7 +399,7 @@ def log_statistics(routing_type):
 def print_stats():
 	#for debugging purposes
 	f = open("log.txt", 'r')
-	print ("\n")
+	#print ("\n")
 	for line in iter(f):
 		print (line)
 	f.close()
@@ -424,7 +414,7 @@ def cal_avg_delay():
 		total_delay += i
 
 	avg_delay = total_delay / len(arr_avg_delay)
-	return avg_delay
+	return round(avg_delay,2)
 	#completed
 
 #need to test this 
