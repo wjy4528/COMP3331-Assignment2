@@ -144,10 +144,13 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 
 	#if dictionary is not empty
 	if (bool(dict_prev_time)):
-		print ("dictionary is not empty here")
+		#print ("dictionary is not empty here")
 
 		#sort the dictionary here to make it faster here
 		sorted(dict_prev_time)
+		print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+		print ("dictionary before mark off: " + len(list(dict_prev_time)))
+		print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
 
 		for key in list(dict_prev_time.keys()):
 			if (float(curr_time) >= key):
@@ -160,6 +163,10 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 				#delete
 				del dict_prev_time[key]
 
+
+	print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+	print ("dictionary after mark off: " + len(list(dict_prev_time)))
+	print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
 
 	#get path
 	path, dij_delay = dijsktra (r_scheme,graph, source, destin)
@@ -210,10 +217,10 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 		sorted(dict_to_finish)
 
 		#eg {0.63->AB}
-		for key,value in dict_to_finish.item():
-			if (float(curr_time) >= key):
+		for key in list(dict_to_finish):
+			if (float(curr_time) >= float(key)):
 				#update, -1 for packet atm
-				graph = update_used (graph, value, -1)
+				graph = update_used (graph, dict_to_finish[key], -1)
 				#delete
 				del dict_to_finish[key]
 				#does not update stats
