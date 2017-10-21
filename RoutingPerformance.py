@@ -214,6 +214,7 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 	#check if the to finish list is empty
 	if (bool (dict_to_finish)):
 		#if not empty, mark off
+
 		sorted(dict_to_finish)
 
 		#eg {0.63->AB}
@@ -235,6 +236,7 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 			if (float(curr_time) >= key):
 				#update, +1 for packet atm
 				dij_list = list(value)
+
 
 				#make a dij request here 
 				path, dij_delay = dijsktra(graph, dij_list[0], dij_list[1])
@@ -381,6 +383,7 @@ def log_statistics(routing_type):
 	f.write("average number of hops per circuit:" + str(avg_hops))
 	f.write("\n")
 	f.write("average cumulative propagation delay per circuit:" + str(cal_avg_delay()))
+
 	f.write("\n")
 
 	f.close()
@@ -480,6 +483,11 @@ def main():
 
 	my_graph=create_graph(TOPOLOGY_FILE)
 	
+
+
+	
+
+
 
 	#path=dijsktra(my_graph,'A','O')
 	#print(visited)
