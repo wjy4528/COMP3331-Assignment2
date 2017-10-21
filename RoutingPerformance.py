@@ -149,7 +149,7 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 		#sort the dictionary here to make it faster here
 		sorted(dict_prev_time)
 		print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-		print ("dictionary before mark off: " + len(list(dict_prev_time)))
+		print ("dictionary before mark off: " + str(len(list(dict_prev_time))))
 		print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
 
 		for key in list(dict_prev_time.keys()):
@@ -165,7 +165,7 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 
 
 	print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-	print ("dictionary after mark off: " + len(list(dict_prev_time)))
+	print ("dictionary after mark off: " + str(len(list(dict_prev_time))))
 	print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
 
 	#get path
