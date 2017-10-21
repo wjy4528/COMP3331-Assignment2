@@ -156,7 +156,6 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 				print ("checking mark off **************************")
 				print ("checking the key: "+ str(key))
 				print("checking path: " + dict_prev_time[key])
-				print 
 				graph = update_used (graph, dict_prev_time[key], -1)
 				#delete
 				del dict_prev_time[key]
