@@ -8,7 +8,7 @@ import re
 from Graph import Graph
 
 
-#program usable :  python RoutingPerformance.py CIRCUIT SDP topology1.txt workloadexample.txt 2
+#program usable :  python3 RoutingPerformance.py CIRCUIT SDP topology1.txt workloadexample.txt 2
 
 #global counters
 total_request = 0
@@ -127,7 +127,7 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 	global total_success_packets
 	global total_blocked_packets
 	global total_circuits
-
+	global total_packets
 	global dict_prev_time
 
 	
@@ -148,10 +148,11 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 		#sort the dictionary here to make it faster here
 		sorted(dict_prev_time)
 
-		for key,value in dict_prev_time.item():
+		for key in list(dict_prev_time.keys()):
 			if (float(curr_time) >= key):
 				#update, -1 for packet atm
-				graph = update_used (graph, value, -1)
+				print("checking path: " + dict_prev_time[key])
+				graph = update_used (graph, dict_prev_time[key], -1)
 				#delete
 				del dict_prev_time[key]
 
@@ -165,13 +166,18 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 		graph = update_used (graph, path, 1)#does not work here
 		total_success_packets += num_packets
 		total_hops += len(path)
+		print ("the delay it is returning: "+ str(dij_delay))
+
+
 		append_delay(dij_delay)#append delay here
 		total_circuits += 1
 
+		#append to dict_prev_time
+		dict_prev_time[packet_finish_t ] = path
 	else: 
 		total_blocked_packets += num_packets
 
-
+	total_packets+= num_packets
 	#last two stats to answer, do we count it if no circuit/path is returned?
 
 dict_to_send = {}
@@ -197,11 +203,50 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 	#check if the to finish list is empty
 	if (bool (dict_to_finish)):
 		#if not empty, mark off
-		pass
+
+		sorted(dict_to_finish)
+
+		#eg {0.63->AB}
+		for key,value in dict_to_finish.item():
+			if (float(curr_time) >= key):
+				#update, -1 for packet atm
+				graph = update_used (graph, value, -1)
+				#delete
+				del dict_to_finish[key]
+				#does not update stats
+
+
 	if (bool (dict_to_send)):
 		#if not empty, get path
-		pass
+		sorted(dict_to_send)
 
+		#eg {0.63->AB}
+		for key,value in dict_to_send.item():
+			if (float(curr_time) >= key):
+				#update, +1 for packet atm
+				dij_list = list(value)
+
+
+				#make a dij request here 
+				path, dij_delay = dijsktra(graph, dij_list[0], dij_list[1])
+
+				if (path):
+					#add finish list to mark off
+					packet_finish_t = key + 1/rate
+
+					dict_to_finishp[packet_finish_t] = path
+
+					#log stats here
+					graph = update_used (graph, path, 1)
+					total_success_packets += 1
+					total_hops += len(path)
+					append_delay(dij_delay)
+					total_circuits += 1
+				else:
+					total_blocked_packets += 1
+
+				#delete
+				del dict_to_send[key]
 
 	#for debbuging
 	print ("\n")
@@ -219,11 +264,14 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 	iterator_t = 1/int(rate)
 	count = 1
 
-	#add to list 
+	#add to start list, process the ones needed
 	while (i < segment_finish_time):
 		print (str(count) +". " +str(i) + " : " + source + " -> " + destin)
-		i += iterator_t
 		count += 1
+		i += iterator_t
+
+		#process first packet , and insert the rest
+
 
 
 
@@ -245,8 +293,8 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 			elapse = val_arr[0]
 			source = val_arr[1]
 			destin = val_arr[2]
-			num_packets = round(float(rate)*float(val_arr[3]))
-			packet_dur = round(num_packets/int(rate))
+			num_packets = math.floor(float(rate)*float(val_arr[3]))
+			request_duration = float(val_arr[3])
 
 			'''			
 			print ('\n')
@@ -277,9 +325,9 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 				#print ("working here")
 				#shortest hop path
 				#feed function and log
-				circuit_case(graph, source, destin, elapse, packet_dur, n_scheme, r_scheme, num_packets)
+				circuit_case(graph, source, destin, elapse, request_duration, n_scheme, r_scheme, num_packets)
 			elif(n_scheme == 'PACKET'):
-				packet_case(graph, source, destin, elapse, packet_dur, n_scheme, r_scheme, num_packets, rate)
+				packet_case(graph, source, destin, elapse, request_duration, n_scheme, r_scheme, num_packets, rate)
 			else:
 				print ("something went wrong, closing program...")
 				break
@@ -301,28 +349,39 @@ def init_stats():
 def log_statistics(routing_type):
 	#calculates the statistics and appedn to file
 
-	success_percentage_routed_packets = total_success_packets/total_packets
-	blocked_percent = total_blocked_packets/total_success_packets
+	success_percentage_routed_packets = (total_success_packets/total_packets)*100
+	blocked_percent = (total_blocked_packets/total_packets)*100
 	avg_hops = total_hops / total_circuits
 
 	f = open("log.txt", 'a+')
 
 	f.write(routing_type+"-----------------------------------------------------")
+	f.write("\n")
 	f.write("total number of virtual circuit requests:" + str(total_request))
+	f.write("\n")
 	f.write("total number of packets:" + str(total_packets))
+	f.write("\n")
 	f.write("number of successfully routed packets:" + str(total_success_packets))
-	f.write("percentage of successfully routed packets:" + str(success_percentage_routed_packets)) 
+	f.write("\n")
+	f.write("percentage of successfully routed packets:" + str(success_percentage_routed_packets))
+	f.write("\n") 
 	f.write("number of blocked packets:" + str(total_blocked_packets))
+	f.write("\n")
 	f.write("percentage of blocked packets:" + str(blocked_percent))
+	f.write("\n")
 	f.write("average number of hops per circuit:" + str(avg_hops))
+	f.write("\n")
 	f.write("average cumulative propagation delay per circuit:" + str(cal_avg_delay()))
+
+	f.write("\n")
+
 	f.close()
 
 
 def print_stats():
 	#for debugging purposes
 	f = open("log.txt", 'r')
-
+	print ("\n")
 	for line in iter(f):
 		print (line)
 	f.close()
@@ -425,8 +484,20 @@ def main():
 
 	workload(my_graph, NETWORK_SCHEME, ROUTING_SCHEME, WORKLOAD_FILE, PACKET_RATE)
 
-	#log_statistics()
-	#print_stats()
+
+	print ("temp debugging =============================")
+	print ("the circuit count: "+ str(total_circuits))
+
+	print ("the total packets is: " + str(total_packets))
+	print ("the list of cumulative delay is :")
+	counteri = 1
+	for i in arr_avg_delay:
+		print (str(counteri)+ ". " + str(i))
+		counteri += 1
+
+
+	log_statistics(ROUTING_SCHEME)
+	print_stats()
 
 	'''
 	debugging the graph graph
