@@ -154,31 +154,38 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 	packet_finish_t = float(curr_time) + float(duration)
 	print ("the finish time: "+ str(packet_finish_t))
 
+	#record list of keys to be deleted later
+	junk_keys = []
+
 	#if dictionary is not empty
 	if (bool(dict_prev_time)):
 		#print ("dictionary is not empty here")
 
 		#sort the dictionary here to make it faster here
 		sorted(dict_prev_time)
-		print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-		print ("dictionary before mark off: " + str(len(list(dict_prev_time))))
-		print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+		#print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+		#print ("dictionary before mark off: " + str(len(list(dict_prev_time))))
+		#print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
 
 		for key in list(dict_prev_time.keys()):
 			if (float(curr_time) >= float(key)):
 				#update, -1 for packet atm
-				print ("\n")
-				print ("checking mark off **************************")
-				print ("checking the key: "+ str(key))
-				print("checking path: " + dict_prev_time[key])
+				#print ("\n")
+				#print ("checking mark off **************************")
+				#print ("checking the key: "+ str(key))
+				#print("checking path: " + dict_prev_time[key])
 				graph = update_used (graph, dict_prev_time[key], -1)
 				#delete
-				del dict_prev_time[key]
+				junk_keys.append(key)
+
+	#delete the keys here
+	for k in junk_keys:
+		del dict_prev_time[k]
 
 
-	print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-	print ("dictionary after mark off: " + str(len(list(dict_prev_time))))
-	print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+	#print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+	#print ("dictionary after mark off: " + str(len(list(dict_prev_time))))
+	#print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
 
 	#get path
 	path, dij_delay = dijsktra (r_scheme,graph, source, destin)
@@ -214,47 +221,65 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 	global total_success_packets
 	global total_blocked_packets
 	global total_circuits
+	global total_packets
 
 	global dict_to_send
 	global dict_to_finish
 
-	segment_finish_time = float(curr_time) + float(duration)
+	#list of marks and to send
+	mark_off = []
+	to_send = []
+
+
+	#print ("check the length of dictionary at start")
+	#print ("the length of to send: "+ str(len(dict_to_send)))
+	#print ("the length of to finish: "+ str(len(dict_to_finish)))
 
 	#check if the to finish list is empty
 	if (bool (dict_to_finish)):
 		#if not empty, mark off
 
 		sorted(dict_to_finish)
-
+		#print ("broken_to_finish no: " +str(len(dict_to_finish)))
+		#print ("******************to finish is kinda working*******************")
 		#eg {0.63->AB}
-		for key in list(dict_to_finish):
+		for key, value in dict_to_finish.items():
 			if (float(curr_time) >= float(key)):
 				#update, -1 for packet atm
-				graph = update_used (graph, dict_to_finish[key], -1)
-				#delete
-				del dict_to_finish[key]
-				#does not update stats
+				#print ("the path that is getting marked off: "+ value)
+				graph = update_used (graph, value, -1)
+
+				#delete stuff late to not screw with dictionary
+				mark_off.append(key)
+
+	#delete the list of keys not needed here 
+	for del_key in mark_off:
+		del dict_to_finish[del_key]
 
 
 	if (bool (dict_to_send)):
 		#if not empty, get path
+		#print ("comparing some stuff here-----------------------------")
 		sorted(dict_to_send)
-
 		#eg {0.63->AB}
-		for key,value in dict_to_send.item():
-			if (float(curr_time) >= key):
+		for key in list(dict_to_send.keys()):
+			if (float(curr_time) >= float(key)):
 				#update, +1 for packet atm
-				dij_list = list(value)
+				dij_list = list(dict_to_send[key])
 
+				#print("the source is "+ dij_list[0])
+				#print("the destination is "+dij_list[1])
 
 				#make a dij request here 
-				path, dij_delay = dijsktra(graph, dij_list[0], dij_list[1])
+				path, dij_delay = dijsktra(r_scheme, graph, dij_list[0], dij_list[1])
 
 				if (path):
 					#add finish list to mark off
-					packet_finish_t = key + 1/rate
+					packet_finish_t = key + 1/float(rate)
 
-					dict_to_finishp[packet_finish_t] = path
+					#print ("the packet finish time from send is: "+str(packet_finish_t))
+					#whyis nothing getting added here ?????
+					dict_to_finish[packet_finish_t] = path
 
 					#log stats here
 					graph = update_used (graph, path, 1)
@@ -263,44 +288,166 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 					append_delay(dij_delay)
 					total_circuits += 1
 				else:
+					#print ("packet is getting blocked 1")
 					total_blocked_packets += 1
 
-				#delete
-				del dict_to_send[key]
+				#delete later
+				to_send.append(key)
+				#print ("the key being deleted is: "+ str(key))
+
+	#removing a list of keys here
+	for mark_off in to_send:
+		del dict_to_send[mark_off]
+	#finish this after shower
 
 	#for debbuging
-	print ("\n")
-	print ("circuit switching debugging ---------------------")
-	print ("source: " + source)
-	print ("destination: " + destin)
-	print ("the network scheme: " + r_scheme)
-	print ("the start time: "+str(curr_time))
+	#print ("\n")
+	#print ("circuit switching debugging ---------------------")
+	#print ("source: " + source)
+	#print ("destination: " + destin)
+	#print ("the network scheme: " + r_scheme)
+	#print ("the start time: "+str(curr_time))
 	the_finish_time = float(curr_time) + float(duration)
 
 	print("\n")
 
-	check_total_packets = str(round (float(duration)*float(rate)))
-	print ("total number of packets for the segment: " + check_total_packets)
+	#do total packets here:
+	packets_requested = math.floor(float(duration)*float(rate))
+	total_packets += packets_requested
 
-	#push in the first element firsts
+	#push in the first element into finish
 	i = float(curr_time)
 	iterator_t = 1/int(rate)
 	count = 1
 
+	#process first packet , and insert the rest
+	first_path, first_delay = dijsktra(r_scheme, graph, source, destin)
+
+	if (first_path):
+		#update stats
+		graph = update_used (graph, first_path, 1)
+		total_success_packets += 1
+		total_hops += len(first_path)
+		append_delay(first_delay)#append delay here
+		total_circuits += 1
+
+		#print ("stuff is getting inserted here: ")
+		#print ("the source "+ str(source))
+		#print ("the destination: "+ str(destin))
+		#print ("the path "+str(first_path))
+
+
+		#append to dict_prev_time
+		first_path_key = i+iterator_t
+		#print ("the first path key is "+str(first_path_key))
+		dict_to_finish[first_path_key] = first_path 
+	else:
+		#print ("packet is being blocked at first path")
+		total_blocked_packets += 1
+
+	#start adding segments from the second element
+	i = i + iterator_t
+
 	#add to start list, process the ones needed
-	while (i < the_finish_time):
-		print (str(count) +". " +str(i) + " : " + source + " -> " + destin)
-		count += 1
+	while (i < (the_finish_time-iterator_t)):
+		#print (str(count) +". " +str(i) + " : " + source + " -> " + destin)
+		#count += 1
+		dict_to_send[i] = source+destin
+
 		i += iterator_t
 
-		#process first packet , and insert the rest
+	#print ("the t_rate per packet: "+ str(iterator_t))
+	#print ("the finish time should be: "+str(the_finish_time))
+	#print ("the number of packets should actually be: "+ str(math.floor(float(duration)*float(rate))))
 
-	print ("the t_rate per packet: "+ str(iterator_t))
-	print ("the finish time should be: "+str(the_finish_time))
+#iterate through the list and mark off everything left after t request has ended
+def tide_up (last_time, n_scheme, r_scheme, graph, rate_time):
+	global dict_prev_time
+	global dict_to_send
+	global dict_to_finish
+	global total_blocked_packets
+	global total_success_packets
+	global total_hops
+	global total_circuits
 
-	#temp here
-	total_hops += 1
-	total_circuits += 1
+
+	last_time = last_time + rate_time
+
+	#last time would be last request time + rate time
+	if(n_scheme == 'CIRCUIT'):
+		print ("circuit switching tidy up here")
+		
+		while (bool(dict_prev_time)):
+			junk_keys = []
+
+			for key,value in dict_prev_time.items():
+				if (float(last_time) >= float(key)):
+					graph = update_used (graph, value, -1)
+					#delete
+					junk_keys.append(key)
+
+			for j in junk_keys:
+				del dict_prev_time[j]
+
+			last_time += rate_time
+#----------------------------------------------------------------------------------
+	else:
+		print ("packet switching here")
+		while (bool(dict_to_send) or bool(dict_to_finish)):
+			junk_send_keys = []
+			junk_finish_keys = []
+
+			#mark off here
+			for key, value in dict_to_finish.items():
+				if (float(last_time) >= float(key)):
+					#update, -1 for packet atm
+					#print ("the path that is getting marked off: "+ value)
+					graph = update_used (graph, value, -1)
+
+					#delete stuff late to not screw with dictionary
+					junk_finish_keys.append(key)
+
+			#delete keys here later
+			for t in junk_finish_keys:
+				del dict_to_finish[t]
+
+
+
+
+			for key in list(dict_to_send.keys()):
+				if (float(last_time) >= float(key)):
+					#update, +1 for packet atm
+					dij_list = list(dict_to_send[key])
+
+					path, dij_delay = dijsktra(r_scheme, graph, dij_list[0], dij_list[1])
+
+					if (path):
+						#add finish list to mark off
+						packet_finish_t = key + rate_time
+
+						#print ("the packet finish time from send is: "+str(packet_finish_t))
+						#whyis nothing getting added here ?????
+						dict_to_finish[packet_finish_t] = path
+
+						#log stats here
+						graph = update_used (graph, path, 1)
+						total_success_packets += 1
+						total_hops += len(path)
+						append_delay(dij_delay)
+						total_circuits += 1
+					else:
+						#print ("packet is getting blocked 1")
+						total_blocked_packets += 1
+
+					#delete later
+					junk_send_keys.append(key)
+
+			for d in junk_send_keys:
+				del dict_to_send[d]
+		
+			#doing the mark for to send
+			last_time += rate_time
+
 
 
 
@@ -361,6 +508,10 @@ def workload(graph, n_scheme, r_scheme, w_file, rate):
 				print ("something went wrong, closing program...")
 				break
 
+	#tide up the graph
+	tide_up (float(elapse), n_scheme, r_scheme, graph, 1/float(rate))
+
+
 
 
 #stats functions here
@@ -377,11 +528,16 @@ def init_stats():
 
 def log_statistics(routing_type):
 	#calculates the statistics and appedn to file
+	#add statement to prevent zero division here first
 
-
+	print ("packet debugging here------------------------------------------------------------")
+	print ("total_packets: " + str(total_packets))
+	print ("total_success_packets: " + str(total_success_packets))
+	print("total_blocked_packets: " + str(total_blocked_packets))
 	success_percentage_routed_packets = round((total_success_packets/total_packets)*100, 2)
 	blocked_percent = round((total_blocked_packets/total_packets)*100, 2)
 
+	print ("packet debugging here------------------------------------------------------------")
 	print("packet checking here")
 	print("the total_hops: "+str(total_hops) + " and the total_circuits" + str(total_circuits))
 
@@ -497,15 +653,6 @@ def main():
 	my_graph=create_graph(TOPOLOGY_FILE)
 	
 
-
-	
-
-
-
-	#path=dijsktra(my_graph,'A','O')
-	#print(visited)
-	#print(path)
-
 	workload(my_graph, NETWORK_SCHEME, ROUTING_SCHEME, WORKLOAD_FILE, PACKET_RATE)
 
 
@@ -520,8 +667,13 @@ def main():
 		counteri += 1
 
 	print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-	print ("dictionary size at the end of the program: " + str(len(list(dict_prev_time))))
+	print ("dictionary size at the end of the program for circuit: " + str(len(list(dict_prev_time))))
 	print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+	print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+	print ("dictionary size at the end of the program for packet: " + str(len(list(dict_to_finish))))
+	print ("start dictionary size at the end of the program for packet: " + str(len(list(dict_to_send))))
+	print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+	
 	log_statistics(ROUTING_SCHEME)
 	print_stats()
 
