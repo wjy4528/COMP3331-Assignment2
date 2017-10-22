@@ -238,11 +238,11 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 	if (bool (dict_to_finish)):
 		#if not empty, mark off
 
-		dict_to_finish = sorted(dict_to_finish)
+		#dict_to_finish = sorted(dict_to_finish)
 		#print ("broken_to_finish no: " +str(len(dict_to_finish)))
 		#print ("******************to finish is kinda working*******************")
 		#eg {0.63->AB}
-		for key, value in dict_to_finish.items():
+		for key, value in sorted(dict_to_finish.items()):
 			if (float(curr_time) >= float(key)):
 				#update, -1 for packet atm
 				#print ("the path that is getting marked off: "+ value)
@@ -261,9 +261,9 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 	if (bool (dict_to_send)):
 		#if not empty, get path
 		#print ("comparing some stuff here-----------------------------")
-		dict_to_send = sorted(dict_to_send)
+		#dict_to_send = sorted(dict_to_send)
 		#eg {0.63->AB}
-		for key in list(dict_to_send.keys()):
+		for key in sorted(list(dict_to_send.keys())):
 			if (float(curr_time) >= float(key)):
 				#update, +1 for packet atm
 				dij_list = list(dict_to_send[key])
@@ -401,12 +401,12 @@ def tide_up (last_time, n_scheme, r_scheme, graph, rate_time):
 			junk_send_keys = []
 			junk_finish_keys = []
 
-			dict_to_finish = sorted(dict_to_finish)
-			dict_to_send = sorted(dict_to_send)
+			#dict_to_finish = sorted(dict_to_finish)
+			#dict_to_send = sorted(dict_to_send)
 
 
 			#mark off here
-			for key, value in dict_to_finish.items():
+			for key, value in sorted(dict_to_finish.items()):
 				if (float(last_time) >= float(key)):
 					#update, -1 for packet atm
 					#print ("the path that is getting marked off: "+ value)
@@ -424,7 +424,7 @@ def tide_up (last_time, n_scheme, r_scheme, graph, rate_time):
 
 
 
-			for key in list(dict_to_send.keys()):
+			for key in sorted(list(dict_to_send.keys())):
 				if (float(last_time) >= float(key)):
 					#update, +1 for packet atm
 					dij_list = list(dict_to_send[key])
