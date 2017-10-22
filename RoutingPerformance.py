@@ -1,5 +1,4 @@
 import sys
-import socket
 import time
 import threading
 import os.path 
@@ -425,7 +424,6 @@ def tide_up (last_time, n_scheme, r_scheme, graph, rate_time):
 
 
 
-		
 			for key in sorted(dict_to_send.keys()):
 				if (float(last_time) >= float(key)):
 					#update, +1 for packet atm
