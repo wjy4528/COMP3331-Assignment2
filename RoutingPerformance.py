@@ -238,7 +238,7 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 	if (bool (dict_to_finish)):
 		#if not empty, mark off
 
-		sorted(dict_to_finish)
+		dict_to_finish = sorted(dict_to_finish)
 		#print ("broken_to_finish no: " +str(len(dict_to_finish)))
 		#print ("******************to finish is kinda working*******************")
 		#eg {0.63->AB}
@@ -250,6 +250,8 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 
 				#delete stuff late to not screw with dictionary
 				mark_off.append(key)
+			else:
+				break
 
 	#delete the list of keys not needed here 
 	for del_key in mark_off:
@@ -259,7 +261,7 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 	if (bool (dict_to_send)):
 		#if not empty, get path
 		#print ("comparing some stuff here-----------------------------")
-		sorted(dict_to_send)
+		dict_to_send = sorted(dict_to_send)
 		#eg {0.63->AB}
 		for key in list(dict_to_send.keys()):
 			if (float(curr_time) >= float(key)):
@@ -292,7 +294,10 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 
 				#delete later
 				to_send.append(key)
+			
 				#print ("the key being deleted is: "+ str(key))
+			else:
+				break
 
 	#removing a list of keys here
 	for mark_off in to_send:
@@ -396,6 +401,10 @@ def tide_up (last_time, n_scheme, r_scheme, graph, rate_time):
 			junk_send_keys = []
 			junk_finish_keys = []
 
+			dict_to_finish = sorted(dict_to_finish)
+			dict_to_send = sorted(dict_to_send)
+
+
 			#mark off here
 			for key, value in dict_to_finish.items():
 				if (float(last_time) >= float(key)):
@@ -405,6 +414,8 @@ def tide_up (last_time, n_scheme, r_scheme, graph, rate_time):
 
 					#delete stuff late to not screw with dictionary
 					junk_finish_keys.append(key)
+				else:
+					break
 
 			#delete keys here later
 			for t in junk_finish_keys:
@@ -440,6 +451,8 @@ def tide_up (last_time, n_scheme, r_scheme, graph, rate_time):
 
 					#delete later
 					junk_send_keys.append(key)
+				else:
+					break
 
 			for d in junk_send_keys:
 				del dict_to_send[d]
