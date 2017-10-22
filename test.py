@@ -111,24 +111,9 @@ def main():
 	WORKLOAD_FILE=sys.argv[4]
 	PACKET_RATE=sys.argv[5]
 	my_graph=create_graph(TOPOLOGY_FILE)
-	
-	my_graph=update_used(my_graph,'BD',1)
-	my_graph=update_used(my_graph,'AF',1)
-	my_graph=update_used(my_graph,'EF',1)
-	my_graph=update_used(my_graph,'BD',1)
-	path,delay_time=dijsktra(ROUTING_SCHEME,my_graph,'A','C')
+	path,delay_time=dijsktra(ROUTING_SCHEME,my_graph,'D','H')
 	print(path)
 	print(delay_time)
-	my_graph=update_used(my_graph,'BD',-1)
-	path,delay_time=dijsktra(NETWORK_SCHEME,my_graph,'A','C')
-
-	print(path)
-	print(delay_time)
-	print(randint(0, 9))
-	print(randint(0, 9))
-	print(randint(0, 9))
-	print(randint(0, 9))
-	
 
 
 
