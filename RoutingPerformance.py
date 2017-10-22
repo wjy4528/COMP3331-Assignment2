@@ -99,11 +99,11 @@ def dijsktra(ROUTING_SCHEME, graph,start_node,end_node):
 		for each_1 in graph.graph:
 			if each_1.name==node_name:
 				for each_2 in each_1.adj_node:
-					if each_2['Full']==True:
-						blocked=True
-						break
 					if each_2['name']==adj_node_name:
 						total_delay+=int(each_2['dtime'])
+						if each_2['Full']==True:
+							blocked=True
+							break
 						break
 				break
 	if blocked:
