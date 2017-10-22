@@ -98,11 +98,11 @@ def dijsktra(ROUTING_SCHEME, graph,start_node,end_node):
 		for each_1 in graph.graph:
 			if each_1.name==node_name:
 				for each_2 in each_1.adj_node:
+					if each_2['Full']==True:
+						blocked=True
+						break
 					if each_2['name']==adj_node_name:
 						total_delay+=int(each_2['dtime'])
-						if each_2['Full']==True:
-							blocked=True
-							break
 						break
 				break
 	if blocked:
@@ -241,12 +241,11 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 		#print ("broken_to_finish no: " +str(len(dict_to_finish)))
 		#print ("******************to finish is kinda working*******************")
 		#eg {0.63->AB}
-		#for key in sorted(dict_to_send.iterkeys()):
-		for key in sorted(dict_to_finish.keys()):
+		for key, value in sorted(dict_to_finish.items()):
 			if (float(curr_time) >= float(key)):
 				#update, -1 for packet atm
 				#print ("the path that is getting marked off: "+ value)
-				graph = update_used (graph, dict_to_finish[key], -1)
+				graph = update_used (graph, value, -1)
 
 				#delete stuff late to not screw with dictionary
 				mark_off.append(key)
@@ -263,7 +262,7 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 		#print ("comparing some stuff here-----------------------------")
 		#dict_to_send = sorted(dict_to_send)
 		#eg {0.63->AB}
-		for key in sorted(dict_to_send.keys()):
+		for key in sorted(list(dict_to_send.keys())):
 			if (float(curr_time) >= float(key)):
 				#update, +1 for packet atm
 				dij_list = list(dict_to_send[key])
@@ -406,12 +405,11 @@ def tide_up (last_time, n_scheme, r_scheme, graph, rate_time):
 
 
 			#mark off here
-			#for key in sorted(dict_to_send.iterkeys()):
-			for key in sorted(dict_to_finish.keys()):
+			for key, value in sorted(dict_to_finish.items()):
 				if (float(last_time) >= float(key)):
 					#update, -1 for packet atm
 					#print ("the path that is getting marked off: "+ value)
-					graph = update_used (graph, dict_to_finish[key], -1)
+					graph = update_used (graph, value, -1)
 
 					#delete stuff late to not screw with dictionary
 					junk_finish_keys.append(key)
@@ -425,6 +423,12 @@ def tide_up (last_time, n_scheme, r_scheme, graph, rate_time):
 
 
 			for key in sorted(dict_to_send.keys()):
+				'''
+=======
+
+			for key in sorted(list(dict_to_send.keys())):
+>>>>>>> 89d55a20dc09fa1a4a6e6278809e36a5815f7c3d
+'''
 				if (float(last_time) >= float(key)):
 					#update, +1 for packet atm
 					dij_list = list(dict_to_send[key])
@@ -692,7 +696,6 @@ def main():
 	'''
 	debugging the graph graph
 	for each in my_graph.graph:
-
 		print(each.name)
 		print("adj_node")
 		for one in each.adj_node:
