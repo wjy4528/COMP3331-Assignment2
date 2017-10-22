@@ -91,7 +91,6 @@ def dijsktra(ROUTING_SCHEME, graph,start_node,end_node):
 			search_key=temp
 		except:
 			return "",0
-	
 	total_delay=0
 	blocked=False
 	for i in range(0,len(path_to_return)-1):
@@ -100,10 +99,11 @@ def dijsktra(ROUTING_SCHEME, graph,start_node,end_node):
 		for each_1 in graph.graph:
 			if each_1.name==node_name:
 				for each_2 in each_1.adj_node:
+					if each_2['Full']==True:
+						blocked=True
+						break
 					if each_2['name']==adj_node_name:
 						total_delay+=int(each_2['dtime'])
-						if each_2['Full']==True:
-							blocked=True
 						break
 				break
 	if blocked:
@@ -128,7 +128,6 @@ def update_used(my_graph, path, value):
 						break
 				break
 	return my_graph
-
 #dictionary of 
 dict_prev_time = {}
 
@@ -195,7 +194,7 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 		#update the graph and stats, if path exist
 		graph = update_used (graph, path, 1)#does not work here
 		total_success_packets += num_packets
-		total_hops += len(path)
+		total_hops += len(path)-1
 		print ("the delay it is returning: "+ str(dij_delay))
 
 
@@ -284,7 +283,7 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 					#log stats here
 					graph = update_used (graph, path, 1)
 					total_success_packets += 1
-					total_hops += len(path)
+					total_hops += len(path)-1
 					append_delay(dij_delay)
 					total_circuits += 1
 				else:
@@ -309,7 +308,7 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 	#print ("the start time: "+str(curr_time))
 	the_finish_time = float(curr_time) + float(duration)
 
-	print("\n")
+	#print("\n")
 
 	#do total packets here:
 	packets_requested = math.floor(float(duration)*float(rate))
@@ -327,7 +326,7 @@ def packet_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme, 
 		#update stats
 		graph = update_used (graph, first_path, 1)
 		total_success_packets += 1
-		total_hops += len(first_path)
+		total_hops += len(first_path)-1
 		append_delay(first_delay)#append delay here
 		total_circuits += 1
 
