@@ -98,11 +98,12 @@ def dijsktra(ROUTING_SCHEME, graph,start_node,end_node):
 		for each_1 in graph.graph:
 			if each_1.name==node_name:
 				for each_2 in each_1.adj_node:
-					if each_2['Full']==True:
-						blocked=True
-						break
+					
 					if each_2['name']==adj_node_name:
 						total_delay+=int(each_2['dtime'])
+						if each_2['Full']==True:
+							blocked=True
+							break
 						break
 				break
 	if blocked:
@@ -141,16 +142,16 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 	global dict_prev_time
 
 	
-	print ("\n")
-	print ("circuit switching---------------------")
-	print ("source: " + source)
-	print ("destination: " + destin)
-	print ("the network scheme: " + r_scheme)
-	print ("the start time: " + str(curr_time))
-	print ("the duration: " + str(duration))
+	#print ("\n")
+	#print ("circuit switching---------------------")
+	#print ("source: " + source)
+	#print ("destination: " + destin)
+	#print ("the network scheme: " + r_scheme)
+	#print ("the start time: " + str(curr_time))
+	#print ("the duration: " + str(duration))
 
 	packet_finish_t = float(curr_time) + float(duration)
-	print ("the finish time: "+ str(packet_finish_t))
+	#print ("the finish time: "+ str(packet_finish_t))
 
 	#record list of keys to be deleted later
 	junk_keys = []
@@ -187,14 +188,14 @@ def circuit_case(graph, source, destin, curr_time, duration, n_scheme, r_scheme,
 
 	#get path
 	path, dij_delay = dijsktra (r_scheme,graph, source, destin)
-	print ("the path return from dij is: " + path)
+	#print ("the path return from dij is: " + path)
 
 	if (path):
 		#update the graph and stats, if path exist
 		graph = update_used (graph, path, 1)#does not work here
 		total_success_packets += num_packets
 		total_hops += len(path)-1
-		print ("the delay it is returning: "+ str(dij_delay))
+		#print ("the delay it is returning: "+ str(dij_delay))
 
 
 		append_delay(dij_delay)#append delay here
@@ -378,7 +379,7 @@ def tide_up (last_time, n_scheme, r_scheme, graph, rate_time):
 
 	#last time would be last request time + rate time
 	if(n_scheme == 'CIRCUIT'):
-		print ("circuit switching tidy up here")
+		#print ("circuit switching tidy up here")
 		
 		while (bool(dict_prev_time)):
 			junk_keys = []
@@ -395,7 +396,7 @@ def tide_up (last_time, n_scheme, r_scheme, graph, rate_time):
 			last_time += rate_time
 #----------------------------------------------------------------------------------
 	else:
-		print ("packet switching here")
+		#print ("packet switching here")
 		while (bool(dict_to_send) or bool(dict_to_finish)):
 			junk_send_keys = []
 			junk_finish_keys = []
@@ -423,12 +424,6 @@ def tide_up (last_time, n_scheme, r_scheme, graph, rate_time):
 
 
 			for key in sorted(dict_to_send.keys()):
-				'''
-=======
-
-			for key in sorted(list(dict_to_send.keys())):
->>>>>>> 89d55a20dc09fa1a4a6e6278809e36a5815f7c3d
-'''
 				if (float(last_time) >= float(key)):
 					#update, +1 for packet atm
 					dij_list = list(dict_to_send[key])
@@ -446,7 +441,7 @@ def tide_up (last_time, n_scheme, r_scheme, graph, rate_time):
 						#log stats here
 						graph = update_used (graph, path, 1)
 						total_success_packets += 1
-						total_hops += len(path)
+						total_hops += len(path)-1
 						append_delay(dij_delay)
 						total_circuits += 1
 					else:
@@ -536,8 +531,9 @@ def init_stats():
 	#if so delete and make new
 	fname = "./log.txt"
 	if (os.path.exists(fname)):
-		print ("log file exist in directory")
-		print ("appending to file ")
+		#print ("log file exist in directory")
+		#print ("appending to file ")
+		pass
 	else:
 		print ("no log file exist in directory")
 	
@@ -546,16 +542,16 @@ def log_statistics(routing_type):
 	#calculates the statistics and appedn to file
 	#add statement to prevent zero division here first
 
-	print ("packet debugging here------------------------------------------------------------")
-	print ("total_packets: " + str(total_packets))
-	print ("total_success_packets: " + str(total_success_packets))
-	print("total_blocked_packets: " + str(total_blocked_packets))
+	#print ("packet debugging here------------------------------------------------------------")
+	#print ("total_packets: " + str(total_packets))
+	#print ("total_success_packets: " + str(total_success_packets))
+	#print("total_blocked_packets: " + str(total_blocked_packets))
 	success_percentage_routed_packets = round((total_success_packets/total_packets)*100, 2)
 	blocked_percent = round((total_blocked_packets/total_packets)*100, 2)
 
-	print ("packet debugging here------------------------------------------------------------")
-	print("packet checking here")
-	print("the total_hops: "+str(total_hops) + " and the total_circuits" + str(total_circuits))
+	#print ("packet debugging here------------------------------------------------------------")
+	#print("packet checking here")
+	#print("the total_hops: "+str(total_hops) + " and the total_circuits" + str(total_circuits))
 
 	avg_hops = round((total_hops / total_circuits), 2)
 
@@ -579,7 +575,7 @@ def print_stats():
 	f = open("log.txt", 'r')
 	#print ("\n")
 	for line in iter(f):
-		print (line)
+		print (line.split('\n')[0])
 	f.close()
 
 
@@ -672,23 +668,23 @@ def main():
 	workload(my_graph, NETWORK_SCHEME, ROUTING_SCHEME, WORKLOAD_FILE, PACKET_RATE)
 
 
-	print ("temp debugging =============================")
-	print ("the circuit count: "+ str(total_circuits))
+	#print ("temp debugging =============================")
+	#print ("the circuit count: "+ str(total_circuits))
 
-	print ("the total packets is: " + str(total_packets))
-	print ("the list of cumulative delay is :")
+	#print ("the total packets is: " + str(total_packets))
+	#print ("the list of cumulative delay is :")
 	counteri = 1
 	for i in arr_avg_delay:
-		print (str(counteri)+ ". " + str(i))
+		#print (str(counteri)+ ". " + str(i))
 		counteri += 1
 
-	print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-	print ("dictionary size at the end of the program for circuit: " + str(len(list(dict_prev_time))))
-	print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-	print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
-	print ("dictionary size at the end of the program for packet: " + str(len(list(dict_to_finish))))
-	print ("start dictionary size at the end of the program for packet: " + str(len(list(dict_to_send))))
-	print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+	#print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+	#print ("dictionary size at the end of the program for circuit: " + str(len(list(dict_prev_time))))
+	#print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+	#print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+	#print ("dictionary size at the end of the program for packet: " + str(len(list(dict_to_finish))))
+	#print ("start dictionary size at the end of the program for packet: " + str(len(list(dict_to_send))))
+	#print ("&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
 	
 	log_statistics(ROUTING_SCHEME)
 	print_stats()
