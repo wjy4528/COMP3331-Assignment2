@@ -42,12 +42,7 @@ def create_graph(TOPOLOGY_FILE):
 
 
 def dijsktra(ROUTING_SCHEME, graph,start_node,end_node):
-	for each in graph.graph:
-		for each_1 in each.adj_node:
-			if each_1['used'] >= int(each_1['load']):
-				each_1['Full']=True
-			else:
-				each_1['Full']=False
+	
 	visited={start_node:0}
 	path={}
 	nodes=set(graph.graph)
@@ -120,9 +115,17 @@ def update_used(my_graph, path, value):
 				for each_2 in each_1.adj_node:
 					if each_2['name']==adj_node_name:
 						each_2['used']+=value
+						if each_2['used'] >= int(each_2['load']):
+							each_2['Full']=True
+						else:
+							each_2['Full']=False
 						for each_3 in each_2['Node'].adj_node:
 							if each_3['name']==node_name:
 								each_3['used']+=value
+								if each_3['used'] >= int(each_3['load']):
+									each_3['Full']=True
+								else:
+									each_3['Full']=False
 								break
 						break
 				break

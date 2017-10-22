@@ -1,8 +1,8 @@
 total number of virtual connection requests:1458
 total number of packets:42969
-number of successfully routed packets:40746
-percentage of successfully routed packets:94.83
-number of blocked packets:2276
-percentage of blocked packets:5.3
+number of successfully routed packets:40756
+percentage of successfully routed packets:94.85
+number of blocked packets:2266
+percentage of blocked packets:5.27
 average number of hops per circuit:2.65
-average cumulative propagation delay per circuit:260.98
+average cumulative propagation delay per circuit:241.07
